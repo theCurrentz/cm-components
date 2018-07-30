@@ -20,5 +20,4 @@ if( is_plugin_active('amazon-associates-link-builder/amazon-associates-link-buil
     return $content;
   }
   add_filter('the_content', 'amazon_one_link_scoper', 1);
-
 }

@@ -1,9 +1,10 @@
 {{#Items}} <!--Section tag for iterating through the list of items-->
 <!-- Single product Ad Template Layout. Position of the Ad can be configured by specifying pull-left or pull-right class below-->
 <div class="aalb-pa-ad-unit" id="{{ID}}">
+  {{#Item}} <!-- Section tag for beginning of information on one item -->
+  {{#aalb}} <!-- Section tag for picking up information on attributes for the item -->
+  <a class="aalb-pa-product-master-link" href="{{DetailPageURL}}" title="{{Title}}" target="_blank" rel="nofollow"></a>
    <div class="aalb-pa-product-container">
-          {{#Item}} <!-- Section tag for beginning of information on one item -->
-            {{#aalb}} <!-- Section tag for picking up information on attributes for the item -->
                 <div class="aalb-pa-product-image">
                     <a class="aalb-pa-product-image-link" href="{{DetailPageURL}}" title="{{Title}}" target="_blank" rel="nofollow"> <!--Individual attributes are provided as variable tags as {{[[attribute]]}}. Check documentation for list of supported variable tags.-->
                       <img class="aalb-pa-product-image-source" src="{{MediumImageURL}}" srcset="{{LargeImageURL}}" alt="{{Title}}" />
@@ -35,6 +36,7 @@
                         <i class="icon-prime-all"></i>
                     </div>
                   {{/Prime}}
+                  <div class="aalb-pa-product-button">See More</div>
                 </div>
             {{/aalb}}
           {{/Item}}
