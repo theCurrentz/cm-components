@@ -7,30 +7,32 @@ function convert_multipage_post( $content ) {
   return $content;
 }
 
-function add_comments_icon($content) {
-    try {
-      if(empty($content) || (!is_single()) || ( get_post_type( get_the_ID() ) != 'post' ) )
+if(get_option('comments_button') == 'yes') {
+  function add_comments_icon($content) {
+      try {
+        if(empty($content) || (!is_single()) || ( get_post_type( get_the_ID() ) != 'post' ) )
+          return $content;
+        $content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
+        $dom = new DOMDocument();
+        $dom->loadHTML($content);
+        $comment = $dom->createElement('button');
+        $comment_text = $dom->createTextNode("Comment");
+        $comment->setAttribute('class', 'comments-icon');
+        $comment->appendChild($comment_text);
+        $ps = $dom->getElementsByTagName('p');
+        if ($ps->length < 2) {
+          return $content;
+        }
+        $targetP = $ps[($ps->length) - 1];
+        $targetP->parentNode->insertBefore($comment, $targetP);
+        $content = preg_replace('/^<!DOCTYPE.+?>/', '', str_replace( array('<html>', '</html>', '<body>', '</body>'), array('', '', '', ''), $dom->saveHTML()));
         return $content;
-      $content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
-      $dom = new DOMDocument();
-      $dom->loadHTML($content);
-      $comment = $dom->createElement('button');
-      $comment_text = $dom->createTextNode("Comment");
-      $comment->setAttribute('class', 'comments-icon');
-      $comment->appendChild($comment_text);
-      $ps = $dom->getElementsByTagName('p');
-      if ($ps->length < 2) {
-        return $content;
+      } catch(Exception $e) {
+        if(!$e->getMessage().contains('figure')) {
+          echo $e->getMessage();
+        }
       }
-      $targetP = $ps[($ps->length) - 1];
-      $targetP->parentNode->insertBefore($comment, $targetP);
-      $content = preg_replace('/^<!DOCTYPE.+?>/', '', str_replace( array('<html>', '</html>', '<body>', '</body>'), array('', '', '', ''), $dom->saveHTML()));
-      return $content;
-    } catch(Exception $e) {
-      if(!$e->getMessage().contains('figure')) {
-        echo $e->getMessage();
-      }
-    }
+  }
 }
 
 //strip unwanted stuff from content
