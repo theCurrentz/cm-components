@@ -1,13 +1,14 @@
 <?php
 //functioon for requesting data from amazon ecom and rendering via wordpress shortcode
+global $AWS_KEY_1, $AWS_KEY_2;
 
 function amazonapi_function( $itemId ) {
   $asin = $itemId[item];
   // Your AWS Access Key ID, as taken from the AWS Your Account page
-  $aws_access_key_id = "AKIAILHXNTV7F4SUTTSQ";
+  $aws_access_key_id = $aws_key_1;
 
   // Your AWS Secret Key corresponding to the above ID, as taken from the AWS Your Account page
-  $aws_secret_key = "fbE0nSZ4n9ZUvEVmXJ2cF+nWpukEgS1vCFw0L8Ua";
+  $aws_secret_key = $aws_key_2;
 
   // The region you are interested in
   $endpoint = "webservices.amazon.com";
