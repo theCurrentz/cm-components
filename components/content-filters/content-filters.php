@@ -44,12 +44,19 @@ function chroma_custom_content_filter( $content ) {
     $content = preg_replace('/<p>\s*(<a.*>*.<\/a>)\s*<\/p>/iU', '\1', $content);
 	  $content = preg_replace('/<p>\s*(<iframe.*>*.<\/iframe>)\s*<\/p>/iU', '\1', $content);
 		$content = preg_replace('/<p>\s*(<blockquote.*>*.<\/blockquote>)\s*<\/p>/iU', '\1', $content);
-    $content = str_replace('<p>&nbsp;</p>', '', $content);
     //never ever use text-align justify
     $content = str_replace('text-align: justify;', '', $content);
     $content = str_replace('text-transform: uppercase;', '', $content);
     //remove these BS <p>&nbsp;</p>
     $content = str_replace('<p>&nbsp;</p>', '', $content);
+
+    //find all name attributes and store
+		preg_match_all('/name=\".*\"/iU', $content, $names );
+    foreach ($names as $name) {
+      $rename = str_replace(' ', '', $name);
+      $content = str_replace($name, $rename, $content);
+    }
+
 		return $content;
 }
 add_filter( 'the_content', 'chroma_custom_content_filter', 99 );

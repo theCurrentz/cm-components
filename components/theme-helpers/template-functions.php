@@ -31,15 +31,6 @@ function chroma_pingback_header() {
 }
 add_action( 'wp_head', 'chroma_pingback_header' );
 
-//modifying conditions for my main archive query
-function modify_main_query( $query ) {
-if ( $query->is_archive() && $query->is_main_query() ) {
-        $query->set( 'posts_per_page', 24 );
-    }
-}
-add_action( 'pre_get_posts', 'modify_main_query' );
-
-
 //modifies the post navigation content
 function filter_archive_nav($archiveNav) {
 
