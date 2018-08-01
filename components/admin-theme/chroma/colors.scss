@@ -72,13 +72,31 @@ input[type=radio]:checked:before {
   z-index: -10;
 }
 
+.wp-not-current-submenu {
+  &:hover {
+     .wp-submenu {
+      max-height: 500px !important;
+      padding: 12px !important;
+    }
+  }
+}
 #adminmenu .wp-not-current-submenu .wp-submenu, .folded #adminmenu .wp-has-current-submenu .wp-submenu {
-  left: $sidebar-width;
   width: $sidebar-width;
+  left: 0px;
+  position: static;
+  transition: all .3s ease .15s;
+  max-height: 0px;
+  overflow: hidden;
+  padding: 0px 12px;
+  & li {
+    display: block
+  }
 }
 #adminmenu .wp-submenu {
     a {
       flex-direction: row !important;
+      font-size: .9rem;
+      line-height: 1.5;
     }
   }
 
