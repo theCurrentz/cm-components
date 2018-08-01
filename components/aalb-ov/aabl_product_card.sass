@@ -1,0 +1,127 @@
+
+.aalb-pa-ad-unit {
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+  max-width: 520px;
+  width: 90%;
+  margin: 16px auto;
+}
+
+.aalb-pa-product-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+/* fixed width and height of product image to 150px */
+.aalb-pa-product-image {
+    display: block;
+    width: 40%;
+    height: auto;
+    margin: 0px auto;
+    text-align: center;
+}
+
+.aalb-pa-product-image-link {
+    position: relative;
+    display: inline-block;
+}
+
+.aalb-pa-product-image-source {
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.aalb-pa-percent-off {
+    display: block;
+    width: 32px;
+    line-height: 32px;
+    height: 32px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    color: #ffffff;
+    font-size: 12px;
+    text-align: center;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    border-radius: 50%;
+    background-color: #a50200;
+    background-image: -webkit-linear-gradient(top, #cb0400, #a50200);
+    background-image: linear-gradient(to bottom, #cb0400, #a50200);
+}
+
+.aalb-pa-ad-unit.hide-percent-off-badge .aalb-pa-percent-off {
+    display: none;
+}
+
+.aalb-pa-product-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 65%;
+    padding-left: 16px;
+}
+
+.aalb-pa-ad-unit .aalb-pa-product-title a {
+    display: block;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.45;
+    color: #000;
+    margin: 6px 0px;
+}
+.aalb-pa-ad-unit.no-truncate .aalb-pa-product-title a {
+    text-overflow: initial;
+    white-space: initial;
+}
+
+.aalb-pa-product-offer-price {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000000;
+}
+
+.aalb-pa-product-offer-price-value {
+  color: #AB1700;
+  font-weight: bold;
+}
+
+.aalb-pa-product-list-price {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #565656;
+}
+
+.aalb-pa-product-list-price-value {
+    text-decoration: line-through;
+}
+
+.aalb-pa-product-prime-icon .icon-prime-all {
+    background: url("https://images-na.ssl-images-amazon.com/images/G/01/AUIClients/AmazonUIBaseCSS-sprite_2x_weblab_AUI_100106_T1-4e9f4ae74b1b576e5f55de370aae7aedaedf390d._V2_.png") no-repeat;
+    display: inline-block;
+    margin-top: -1px;
+    vertical-align: middle;
+    background-position: -192px -911px;
+    background-size: 560px 938px;
+    width: 52px;
+    height: 15px;
+}
+
+.aalb-pa-product-offer-price,
+.aalb-pa-product-list-price,
+.aalb-pa-product-prime-icon {
+  display: inline-block;
+  margin: 6px auto;
+}
+
+img[data-pagespeed-url-hash] {
+  width: 0px !important;
+  z-index: -1;
+}

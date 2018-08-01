@@ -14,10 +14,10 @@ if( is_plugin_active('amazon-associates-link-builder/amazon-associates-link-buil
   add_action( 'wp_enqueue_scripts', 'aabl_override_dequeue', 100 );
 
   function amazon_one_link_scoper($content) {
-    if ($content.contains('amazon_link')) {
+    if ( strpos($content, 'amazon_link') ) {
       add_action('wp_footer', function() { return '<div id="amzn-assoc-ad-f5b799e6-abd0-4736-9052-69d5b390f261"></div><script async src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=f5b799e6-abd0-4736-9052-69d5b390f261"></script>'; }, 100 );
     }
+    return $content;
   }
-  add_filter('the_content', 'amazon_one_link_scoper');
-
+  add_filter('the_content', 'amazon_one_link_scoper', 1);
 }

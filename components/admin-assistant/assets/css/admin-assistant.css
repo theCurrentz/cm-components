@@ -83,9 +83,22 @@ html {
 .progress_bar, .progress_bar_bg {
   top: 84px !important;
 }
+#main-nav-cont {
+      top: 32px !important;
+    }
+.ga-banner, .gallery-header-meta { top: 77px!important; }
+/*
+gutenberg layout fixes
+*/
+
 .editor-writing-flow {
   height: auto !important;
 }
 .editor-writing-flow__click-redirect {
   flex-basis: auto !important;
+}
+@media (min-width: 960px) {
+  .auto-fold .edit-post-header, .auto-fold .components-notice-list {
+      left: 203px !important;
+  }
 }
