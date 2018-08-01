@@ -2,7 +2,7 @@
 abstract class meta_box_plag_warn {
 
   public static function add_box() {
-  add_meta_box( 'plag-meta-box-id', esc_html__( 'Plagiarism Warning', 'text-domain' ), 'self::display_box', 'post', 'side', 'high' );
+  add_meta_box( 'plag-meta-box-id', esc_html__( 'Plagiarism Warning', 'text-domain' ), 'meta_box_plag_warn::display_box', 'post', 'side', 'high' );
   }
 
   // Display the post meta box for ads toggling

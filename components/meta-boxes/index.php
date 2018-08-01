@@ -28,6 +28,7 @@ function chromma_add_post_meta_boxes() {
   meta_box_ads_toggle::add_box();
   meta_box_featured_img::add_box();
   meta_box_format_options::add_box();
+  meta_box_plag_warn::add_box();
 }
 
 // Save the meta boxs' values as post metadata.
@@ -47,6 +48,7 @@ function chromma_save_meta( $post_id, $post ) {
   meta_box_ads_toggle::check_posted_values($post);
   meta_box_featured_img::check_posted_values($post);
   meta_box_format_options::check_posted_values($post);
+  meta_box_plag_warn::check_posted_values($post);
 }
 
 add_action( 'save_post', 'chromma_save_meta', 10, 2 );

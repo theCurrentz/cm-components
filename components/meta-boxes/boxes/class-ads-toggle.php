@@ -5,7 +5,7 @@ abstract class meta_box_ads_toggle {
     add_meta_box(
       'toggle-ads',			// Unique ID
       'Toggle Ads',		// Title
-      'self::display_box',		// Callback function
+      'meta_box_ads_toggle::display_box',		// Callback function
       'post',					// Admin page (or post type)
       'side',					// Context
       'core'					// Priority

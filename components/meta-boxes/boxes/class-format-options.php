@@ -5,7 +5,7 @@ abstract class meta_box_format_options {
     add_meta_box(
       'format_options',			// Unique ID
       'Format Options',		// Title
-      'self::display_box',		// Callback function
+      'meta_box_format_options::display_box',		// Callback function
       'post',					// Admin page (or post type)
       'side',					// Context
       'core'					// Priority
