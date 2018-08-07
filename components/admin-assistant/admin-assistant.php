@@ -32,7 +32,7 @@ add_action( 'admin_bar_menu', 'remove_admin_icons', 999 );
 
 //Editor Custom styles
 function wpdocs_theme_add_editor_styles() {
-  add_editor_style( plugins_url('/inc/admin-assistant/assets/css/editor-style.css', __FILE__ ) );
+  add_editor_style( plugins_url('/assets/css/editor-style.css', __FILE__ ) );
 }
 add_action( 'admin_init', 'wpdocs_theme_add_editor_styles' );
 
