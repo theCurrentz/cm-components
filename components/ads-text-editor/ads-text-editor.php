@@ -17,9 +17,9 @@ function ads_text_options() {
     update_option( 'ads_text', $ads_text_posted_val );
   }
   $ads_text_data = get_option('ads_text');
-  echo (isset($_POST[ 'ads_text' ]) && count($ads_text_data) > 0 ) ? '<div class="updated"><p><strong>Ads.txt Saved</strong></p></div>' : '';
+  echo (isset($_POST[ 'ads_text' ]) && str_word_count($ads_text_data) > 0 ) ? '<div class="updated"><p><strong>Ads.txt Saved</strong></p></div>' : '';
   ?>
-  <form name="form1" method="post" action="">
+  <form id="ad_form" name="form1" method="post" action="">
     <h1>Ads.txt</h1>
     <table class="form-table">
       <tr valign="top">
@@ -30,7 +30,7 @@ function ads_text_options() {
       <tr>
         <td>
           <div class="submit">
-            <input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Save Changes') ?>" />
+            <input id="ad_form_submit" type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Save Changes') ?>" />
             &nbsp;&nbsp;
             <button id="sortAds" type="button" class="button-primary" onClick="sortAdsText()">
               Sort
@@ -60,15 +60,46 @@ function ads_text_options() {
       textArea.value = newArray.join('')
     }
   }
+  //ads.txt validation
+  const adSubmit = document.getElementById("ad_form_submit")
+  adSubmit.addEventListener('click', (event) => {
+    event.preventDefault()
+    let textArea = document.getElementById('toSort').value
+    if(!textArea.includes('google.com, pub-'))
+      alert('Ads.txt must include a line with a valid google-pub ID')
+    // else if (!textArea.includes('revcontent.com'))
+    //   alert('Ads.txt must include a line for revcontent')
+    else
+       document.getElementById('ad_form').submit()
+  })
   </script>
+
 <?php
-  if (isset($_POST['ads_text'])) {
-    $write_file = "/var/www/html/ads.txt";
-    $file_opened = fopen($write_file, "w");
-    if ($file_opened != false) {
-      fwrite($file_opened, $ads_text_data);
-      fclose($file_opened);
-    } else
-      exit();
+  //write ads.txt from database to file, conditional logic for writing to idrop servers
+  function write_ads_text() {
+    setcookie('ads-txt', 'enable', time() + 7000);
+    //conditional logic
+    if(get_bloginfo('name') == 'iDrop News') {
+      $IDN_IP_S = IDN_IP_S;
+      var_dump($IDN_IP_S);
+      foreach($IDN_IP_S as $an_ip) {
+        // $endpoint = 'https://' . $an_ip . '/wp-content/plugins/'. plugin_basename( __DIR__ ) . '/writer/ads-text-writer.php';
+        // //open connection
+        // $ch = curl_init();
+        // //set url
+        // curl_setopt($ch,CURLOPT_URL, $endpoint);
+        // //execute post
+        // $result = curl_exec($ch);
+        // //close connection
+        // curl_close($ch);
+      }
+    }
+    else {
+    }
+
+  }
+
+  if(isset($_POST['ads_text'])) {
+    write_ads_text();
   }
 }
