@@ -76,30 +76,5 @@ function ads_text_options() {
 
 <?php
   //write ads.txt from database to file, conditional logic for writing to idrop servers
-  function write_ads_text() {
-    setcookie('ads-txt', 'enable', time() + 7000);
-    //conditional logic
-    if(get_bloginfo('name') == 'iDrop News') {
-      $IDN_IP_S = IDN_IP_S;
-      var_dump($IDN_IP_S);
-      foreach($IDN_IP_S as $an_ip) {
-        // $endpoint = 'https://' . $an_ip . '/wp-content/plugins/'. plugin_basename( __DIR__ ) . '/writer/ads-text-writer.php';
-        // //open connection
-        // $ch = curl_init();
-        // //set url
-        // curl_setopt($ch,CURLOPT_URL, $endpoint);
-        // //execute post
-        // $result = curl_exec($ch);
-        // //close connection
-        // curl_close($ch);
-      }
-    }
-    else {
-    }
-
-  }
-
-  if(isset($_POST['ads_text'])) {
-    write_ads_text();
-  }
+  require(__DIR__ . '/writer/ads-text-writer.php');
 }

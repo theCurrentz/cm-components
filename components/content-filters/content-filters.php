@@ -131,7 +131,7 @@ function chroma_img_caption_shortcode( $empty, $attr, $content ) {
 
   $aspectThresholdfix = 'height: auto; padding: 0px; max-height: '.$height.'px; max-width: '.$width.'px;';
   $image = do_shortcode( $content );
-  $new_caption = "<div>" . trim(addslashes($caption)) . "</div>";
+  $new_caption = "<div>" . trim($caption) . "</div>";
   $new_content = '<figure class="entry-content_figure fig-wcaption">'.$image.'<figcaption class="figcaption">'.$new_caption.'</figcaption></figure>';
 	return $new_content;
 }
