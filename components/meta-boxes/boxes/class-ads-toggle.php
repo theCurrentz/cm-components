@@ -14,8 +14,7 @@ abstract class meta_box_ads_toggle {
 
   // Display the post meta box for ads toggling
   public static function display_box( $post ) {
-    //Include a nonce on the first meta box only
-    wp_nonce_field( basename( __FILE__ ), 'chromma_nonce' );
+    wp_nonce_field( 'chroma_meta', 'chroma_nonce' );
   	//conditional logic for this functionality exists within  single.php, header.php, content-header.php and content-footer.php
     $selected = get_post_meta( $post->ID, 'chromma-toggle-ads', true );
     ?>

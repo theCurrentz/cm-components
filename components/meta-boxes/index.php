@@ -26,7 +26,7 @@ function chromma_is_checked($needle, $haystack) {
 //Create meta boxes
 function chromma_add_post_meta_boxes() {
   meta_box_ads_toggle::add_box();
-  meta_box_featured_img::add_box();
+  meta_box_featured_img_toggle::add_box();
   meta_box_format_options::add_box();
   meta_box_plag_warn::add_box();
 }
@@ -35,20 +35,16 @@ function chromma_add_post_meta_boxes() {
 function chromma_save_meta( $post_id, $post ) {
   global $post;
   // verify meta box nonce (field is placed in "class-ad-toggle.php")
-  if ( !isset( $_POST['chromma_nonce'] ) || !wp_verify_nonce( $_POST['chromma_nonce'], basename( __FILE__ ) ) ) {
-  	return;
-  }
-  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-  		return;
-  }
-  if ( !current_user_can( 'edit_post', $post->ID ) ) {
-   	return;
-  }
+  if ( !isset( $_POST['chroma_nonce'] ) || !wp_verify_nonce( $_POST['chroma_nonce'], 'chroma_meta') )
+    return;
+  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+    return;
+  if ( !current_user_can( 'edit_post', $post->ID ) )
+    return;
   //check posted values
   meta_box_ads_toggle::check_posted_values($post);
-  meta_box_featured_img::check_posted_values($post);
+  meta_box_featured_img_toggle::check_posted_values($post);
   meta_box_format_options::check_posted_values($post);
-  meta_box_plag_warn::check_posted_values($post);
 }
 
 add_action( 'save_post', 'chromma_save_meta', 10, 2 );

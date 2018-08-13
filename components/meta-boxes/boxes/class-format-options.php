@@ -27,9 +27,12 @@ abstract class meta_box_format_options {
 
   //check posted values
   public static function check_posted_values( $post ) {
-    if ( isset( $_POST['chromma-format_options_1']) ||  isset($_POST['chromma-format_options_2'] ) ) {
+    if ( isset( $_POST['chromma-format_options_1']) || isset($_POST['chromma-format_options_2'] ) ) {
       $format_options_checkbox_values = array($_POST['chromma-format_options_1'], $_POST['chromma-format_options_2']);
       update_post_meta( $post->ID, 'chromma-format_options', $format_options_checkbox_values );
+    }
+    else {
+      update_post_meta( $post->ID, 'chromma-format_options', null );
     }
   }
 
