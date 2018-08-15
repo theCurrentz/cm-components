@@ -52,7 +52,6 @@ add_action( 'save_post', 'chromma_save_meta', 10, 2 );
 //remove unneccessary metaboxes from being queued up
 function chroma_remove_metaboxs() {
   remove_meta_box( 'postexcerpt','post','normal' );
-  remove_meta_box( 'slugdiv','post','normal' );
   remove_meta_box( 'trackbacksdiv','post','normal' );
   remove_meta_box( 'commentsdiv','post','normal' );
   remove_meta_box( 'commentstatusdiv','post','normal' );
