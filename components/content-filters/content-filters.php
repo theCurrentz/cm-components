@@ -49,6 +49,7 @@ function chroma_custom_content_filter( $content ) {
     $content = str_replace('text-transform: uppercase;', '', $content);
     //remove these BS <p>&nbsp;</p>
     $content = str_replace('<p>&nbsp;</p>', '', $content);
+    $content = str_replace('<p></p>', '', $content);
 
     //find all name attributes and store
 		preg_match_all('/name=\".*\"/iU', $content, $names );
@@ -59,7 +60,7 @@ function chroma_custom_content_filter( $content ) {
 
 		return $content;
 }
-add_filter( 'the_content', 'chroma_custom_content_filter', 90 );
+add_filter( 'the_content', 'chroma_custom_content_filter', 99 );
 
 /**
 * Add Next Page/Page Break Button
@@ -131,7 +132,7 @@ function chroma_img_caption_shortcode( $empty, $attr, $content ) {
 
   $aspectThresholdfix = 'height: auto; padding: 0px; max-height: '.$height.'px; max-width: '.$width.'px;';
   $image = do_shortcode( $content );
-  $new_caption = "<div>" . trim($caption) . "</div>";
+  $new_caption = trim($caption);
   $new_content = '<figure class="entry-content_figure fig-wcaption">'.$image.'<figcaption class="figcaption">'.$new_caption.'</figcaption></figure>';
 	return $new_content;
 }
