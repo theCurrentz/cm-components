@@ -104,35 +104,3 @@ function related_a_tag($content) {
     return $content;
 }
 add_filter( 'the_content', 'related_a_tag' );
-
-//override filter that accepts the_content and processes the caption shortcode for a custom layout
-add_filter( 'img_caption_shortcode', 'chroma_img_caption_shortcode', 10, 3 );
-
-function chroma_img_caption_shortcode( $empty, $attr, $content ) {
-
-  extract(shortcode_atts(array(
-      'id'	=> '',
-      'align'	=> '',
-      'width'	=> '',
-      'caption' => ''
-    ), $attr));
-
-    if ( 1 > (int) $width || empty( $caption ) )
-        return $content;
-
-  //parse out the desired dimensions and apply the dimensions as an aspect ratio to the figure
-  $aspect_ratio = get_option('chromma-load-ar');
-  $aspect_ratio = str_replace('-', '', $aspect_ratio);
-  $aspect_ratio = str_replace('x', ',', $aspect_ratio);
-  $aspect_ratio_array = explode(',', $aspect_ratio);
-  $width = $aspect_ratio_array[0];
-  $height = $aspect_ratio_array[1];
-
-  $aspectRatio = ($height > 0 && $width > 0) ? ($height / $width) * 100 : 101;
-
-  $aspectThresholdfix = 'height: auto; padding: 0px; max-height: '.$height.'px; max-width: '.$width.'px;';
-  $image = do_shortcode( $content );
-  $new_caption = trim($caption);
-  $new_content = '<figure class="entry-content_figure fig-wcaption">'.$image.'<figcaption class="figcaption">'.$new_caption.'</figcaption></figure>';
-	return $new_content;
-}

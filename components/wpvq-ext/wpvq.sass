@@ -57,6 +57,7 @@
 .wpvqgr-htmlblock
    margin: 10px 0
 .wpvqgr-question
+  position: relative
   width: 100%
   height: 100%
   .wpvq-answers
@@ -80,6 +81,7 @@
     line-height: 1.35
     color: #fff
     width: 100%
+    padding: 0px 4%
   .wpvqgr-question-picture
     text-align: center
 .progress
@@ -93,7 +95,7 @@
     height: 5px
     background: rgba(0,0,0,.3)
 .wpvqgr-answer
-  background: rgba(255, 255, 255, .4)
+  background: rgba(255, 255, 255, .38)
   border-radius: 2px
   color: #fff
   padding: 7px
@@ -199,3 +201,19 @@
     a
       text-decoration:  none
       border-bottom: 0px
+.wpvq-ext_timer
+  position: absolute
+  z-index: 0
+  top: 0px
+  left: 0px
+  width: 0px
+  height: 100%
+  overflow: hidden
+  background: rgba(255,255,255,.15)
+  animation: wpvq-timer 1s linear 1 forwards
+
+@keyframes wpvq-timer
+  0%
+    width: 0%
+  100%
+    width: 100%
