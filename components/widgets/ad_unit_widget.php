@@ -7,21 +7,20 @@ class ad_unit_widget extends WP_Widget {
 	function __construct() {
 		$widget_options = array(
 			'classname' => 'ad_unit_widget',
-			'description' => 'Extended HTML widget built specifically for ads!',
+			'description' => 'A text/html widget for displaying ads',
 		);
 		// Instantiate the parent object
-		parent::__construct( false, 'Ad Unit Widget: Will not output on mobile devices');
+		parent::__construct( false, 'Ad Unit Widget');
 	}
 	//frontend output
 	function widget($args, $instance) {
 
 		extract( $args );
 
-		$before_widget = '<section>';
+		$before_widget = '';
 		$html = $instance['html'];
-		$after_widget = '</section>';
-		if (!wp_is_mobile())
-			echo stripslashes($html);
+		$after_widget = '';
+		echo stripslashes($html);
 	}
 	//Backend Form
 	public function form($instance) {

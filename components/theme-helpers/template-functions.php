@@ -16,7 +16,6 @@ function chroma_body_classes( $classes ) {
 	if ( ! is_singular() ) {
 		$classes[] = 'hfeed';
 	}
-
 	return $classes;
 }
 add_filter( 'body_class', 'chroma_body_classes' );
