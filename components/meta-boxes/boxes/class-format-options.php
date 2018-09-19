@@ -14,7 +14,7 @@ abstract class meta_box_format_options {
 
   // Display the post meta box for ads toggling
   public static function display_box( $post ) {
-    $selected = get_post_meta( $post->ID, 'chromma-format_options', true );
+    $selected = get_post_meta( $post->ID, 'chromma-format_options', false );
     ?>
     <p>
       <input type="checkbox" name="chromma-format_options_1" id="chromma-format_options_1" value="Dark Mode" <?php chromma_is_checked('Dark Mode', $selected); ?>>Dark Mode

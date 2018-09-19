@@ -20,7 +20,11 @@ class ad_unit_widget extends WP_Widget {
 		$before_widget = '';
 		$html = $instance['html'];
 		$after_widget = '';
-		echo stripslashes($html);
+    global $post;
+    $adsOn = get_post_meta( $post->ID, 'chromma-toggle-ads', true );
+    if ($adsOn != "off") {
+		    echo stripslashes($html);
+    }
 	}
 	//Backend Form
 	public function form($instance) {

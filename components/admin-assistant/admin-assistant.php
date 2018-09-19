@@ -8,6 +8,7 @@ function admin_assistant_front_end() {
 function admin_assistant_back_end() {
   if ( current_user_can('editor') || current_user_can('administrator') || is_admin() ) {
     wp_enqueue_script( 'admin-assistant', plugins_url( '/assets/js/admin-assistant.js' , __FILE__ ), '', '', true);
+    wp_enqueue_style( 'admin-css', plugins_url( '/assets/css/admin-assistant.css', __FILE__ ), '', '', false );
   }
 }
 add_action( 'wp_enqueue_scripts', 'admin_assistant_front_end' );

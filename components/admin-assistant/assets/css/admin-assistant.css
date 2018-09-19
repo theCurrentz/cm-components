@@ -102,3 +102,64 @@ gutenberg layout fixes
       left: 203px !important;
   }
 }
+
+.chroma_tabs_controller {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+.chroma_tabs_controller span {
+  background-color: inherit;
+  border-right: 1px solid #ccc;
+  float: left;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+.chroma_tabs_controller span:hover {
+  background-color: #ddd;
+}
+.chroma_tabs_controller span.is_active {
+  background-color: #09c894;
+  color: #fff;
+}
+.chroma_tabs {
+  display: block;
+  width: 100%;
+  min-height: 260px;
+  margin: 0px;
+}
+
+.chroma_tabs .chroma_tabs_box {
+  display: none;
+  overflow: hidden;
+  opacity: 0;
+  min-height: 260px;
+  padding: 0px;
+  border-top: none;
+}
+.chroma_tabs .chroma_tabs_box textarea {
+  padding: 12px;
+  min-height: 260px;
+  height: 100%;
+}
+.chroma_tabs .chroma_tabs_box.first {
+  display: block;
+  opacity: 1;
+  width: 100%;
+  height: auto;
+}
+.chroma_tabs_box.is_active {
+  display: block;
+  animation: _fade_in .4s;
+  animation-fill-mode: forwards;
+}
+@keyframes _fade_in {
+  0% {
+    opacty: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

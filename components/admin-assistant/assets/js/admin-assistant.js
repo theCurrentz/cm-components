@@ -4,6 +4,8 @@ import {imgHelper} from './modules/img-helper.js'
 imgHelper()
 import {checkPlag} from './modules/check-plag.js'
 checkPlag()
+import {tabsBox} from './modules/tabs-box.js'
+tabsBox()
 
 if(document.getElementsByClassName('gutenberg-editor-page').length > 0) {
   window.send_to_editor = function(shortcode) {

@@ -19,9 +19,13 @@ class chroma_sticky_widget extends WP_Widget {
 
 		$before_widget = '<section class="sticky">';
 		$html = $instance['html'];
-		$before_widget = '<section class="sticky">';
-		if (!wp_is_mobile())
-			echo $before_widget . stripslashes($html) . $after_widget;
+		$after_widget = '</section>';
+    global $post;
+    $adsOn = get_post_meta( $post->ID, 'chromma-toggle-ads', true );
+    if ($adsOn != "off") {
+  		if (!wp_is_mobile())
+  			echo $before_widget . stripslashes($html) . $after_widget;
+    }
 	}
 	//Backend Form
 	public function form($instance) {

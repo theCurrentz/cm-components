@@ -1,5 +1,5 @@
-import 'promise-polyfill/src/polyfill';
-import 'whatwg-fetch'
+//import 'promise-polyfill/src/polyfill';
+//import 'whatwg-fetch'
 
 var errorArray = []
 //console error override
@@ -59,10 +59,11 @@ const chromaErrorHandler = () => {
           `client_error=${errorMsg}`
       })
       .then( (response) => {
-        response.json()
-          .then( (data) => {
-            console.log('EPS: ' + data)
-          })
+        try {
+          console.log(response.status)
+        } catch(e) {
+          console.log(e, response);
+        }
       })
       .catch( (error) => {
         console.log(error)
