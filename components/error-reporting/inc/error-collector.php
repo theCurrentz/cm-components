@@ -12,7 +12,7 @@ add_action( 'rest_api_init', function () {
 
 //collector as callback
 function chroma_error_collector(WP_REST_Request $request) {
-  $accepted_origins = array('https://alltimelists.com','https://healthiguide.com','https://idropnews.com','http://216.174.80.158','http://34.227.68.226','http://216.174.80.133');
+  $accepted_origins = array('https://alltimelists.com','https://healthiguide.com','https://www.healthiguide.com', 'https://idropnews.com','http://216.174.80.158','http://34.227.68.226','http://216.174.80.133');
   if(!in_array($_SERVER['HTTP_ORIGIN'], $accepted_origins))
     return new WP_REST_Response('You are definitely not allowed to do this. Get out of here!', 403);
   try {
