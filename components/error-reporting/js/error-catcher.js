@@ -4,7 +4,7 @@
 var errorArray = []
 //console error override
 // define a new console which will allow us to listen to custom console errors
-var console = (function(oldCons){
+var console = (function(oldCons) {
     return {
         log: function(text){
             oldCons.log(text);
@@ -24,7 +24,7 @@ var console = (function(oldCons){
             // Your code
         }
     };
-}(window.console));
+} (window.console));
 
 //Then redefine the old console
 window.console = console;

@@ -73,15 +73,6 @@ input[type=radio]:checked:before {
 #wpfooter {
   z-index: -10;
 }
-
-.wp-not-current-submenu {
-  &:hover {
-     .wp-submenu {
-      max-height: 500px !important;
-      padding: 12px !important;
-    }
-  }
-}
 #adminmenu .wp-not-current-submenu .wp-submenu, .folded #adminmenu .wp-has-current-submenu .wp-submenu {
   width: $sidebar-width;
   left: 0px;
