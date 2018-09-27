@@ -7,7 +7,7 @@ function convert_multipage_post( $content ) {
   return $content;
 }
 
-if(get_option('comments_button') == 'yes') {
+if (get_option('comments_button') == 'yes') {
   function add_comments_icon($content) {
       try {
         if(empty($content) || (!is_single()) || ( get_post_type( get_the_ID() ) != 'post' ) )
@@ -33,6 +33,7 @@ if(get_option('comments_button') == 'yes') {
         }
       }
   }
+  add_filter( 'the_content', 'add_comments_icon', 99 );
 }
 
 //strip unwanted stuff from content
