@@ -33,6 +33,7 @@ if (get_option('comments_button') == 'yes') {
         }
       }
   }
+  add_filter( 'the_content', 'add_comments_icon', 99 );
 }
 
 //strip unwanted stuff from content

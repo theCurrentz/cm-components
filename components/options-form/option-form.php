@@ -17,8 +17,12 @@ function chroma_settings()  {
     wp_die( __('You do not have sufficient permissions to access this page.') );
   }
   //data
-  if (isset($_POST['comments_button']))
-    update_option('comments_button', $_POST['comments_button']);
+  if( isset($_POST[ 'hidden_field' ]) && $_POST[ 'hidden_field' ] == 'Y' ) {
+    if (isset($_POST['comments']) && $_POST['comments'])
+      update_option('comments_button', $_POST['comments']);
+    else
+      update_option('comments_button', null);
+  }
   $comments_button_val = get_option('comments_button');
   ?>
   <div class="updated"><p><strong><?php _e('settings saved.', 'menu-test' ); ?></strong></p></div>
@@ -26,12 +30,13 @@ function chroma_settings()  {
   <div class="wrap">
     <h1><?php bloginfo( 'name' ); ?> Settings</h1>
     <form name="form1" method="post" action="">
+      <input type="hidden" name="<?php echo 'hidden_field'; ?>" value="Y"/>
       <h3>Chroma Options:</h3>
       <table class="form-table">
         <tr valign="top">
           <th scope="row">Display Comment Button?</th>
           <td>
-            <input type="checkbox" name="comments_button" value="yes" <?php checked($comments_button_val,'yes'); ?>/>
+            <input type="checkbox" name="comments" <?php checked($comments_button_val,'yes'); ?> value="yes"/>
           </td>
         </tr>
         <tr valign="top">
@@ -43,6 +48,6 @@ function chroma_settings()  {
         </tr>
       </table>
     </form>
-
+  </div>
 <?php
 }
