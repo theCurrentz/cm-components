@@ -57,7 +57,7 @@ function chroma_form_processer(WP_REST_Request $request) {
         $type = chroma_sanitize_input($request->get_param('type'));
         $currURL = chroma_sanitize_input($request->get_param('currURL'));
         $ip = getenv('HTTP_CLIENT_IP')?:getenv('HTTP_X_FORWARDED_FOR')?:getenv('HTTP_X_FORWARDED')?:getenv('HTTP_FORWARDED_FOR')?:getenv('HTTP_FORWARDED')?:getenv('REMOTE_ADDR');
-        $prop = "HealthiGuide.com";
+        $prop = get_bloginfo( 'name' );
         //prepare to insert post result values into database
         $stmt = "INSERT INTO signups (email, subscribe_type, ip_address, web_property, signup_url) VALUES ('$email', '$type', '$ip', '$prop', '$currURL') ON DUPLICATE KEY UPDATE email='$email', subscribe_type='$type'";
         if ($conn->query($stmt) === TRUE) {

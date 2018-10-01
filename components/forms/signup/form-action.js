@@ -25,7 +25,6 @@ function chromaFormHandler () {
       }
       let errorMSG = document.getElementById('errorMessage'),
           errorMSG2 = document.getElementById('errorMessage2')
-      console.log(errorMSG2)
       errorMSG.classList.remove('is-active')
       errorMSG.innerText = text[0]
       errorMSG2.innerText = text[1]
