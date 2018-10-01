@@ -23,9 +23,9 @@ class signupWidget extends WP_Widget {
     echo '<div class="signup_sidebar">
     		<div class="ball">
     			<!-- sign up form with html validation -->
-    			<form id="subscribe" class="signup_sidebar--form" method="post" action="'.site_url().'/form-processing/">
+    			<form id="subscribe" class="signup_sidebar--form" method="post">
     				<label id="errorMessage" class="signup_sidebar--label">'.$title.'</label>
-            <span class="signup_sidebar--desc">'.$copy.'</span>
+            <span id="errorMessage2" class="signup_sidebar--desc">'.$copy.'</span>
     				<input id="subscribeEmail" type="email" pattern="^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$" name="email" required minlength="6" class="signup_sidebar--input" placeholder="you@site.com"></input>
     				<button type="submit" class="signup_sidebar--submit">
     					<span class="signup_sidebar--submit--span">Subscribe</span>

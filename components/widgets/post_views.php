@@ -44,8 +44,7 @@ class popular_posts extends WP_Widget {
       )
     );
 
-    if($popularPosts->have_posts())
-    {
+    if($popularPosts->have_posts()) {
       if(!empty($title)) {
         echo $args['before_title'] . $title .$args['after_title'];
       }

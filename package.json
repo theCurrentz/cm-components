@@ -24,6 +24,7 @@
     },
     "homepage": "https://github.com/Timbral/create-js-app#readme",
     "devDependencies": {
+        "@babel/preset-env": "^7.1.0",
         "babel-core": "^6.26.3",
         "babel-eslint": "^8.2.6",
         "babel-loader": "^7.1.5",
@@ -51,6 +52,7 @@
     ],
     "dependencies": {
         "node-fetch": "^2.1.2",
+        "npm": "^6.4.1",
         "promise-polyfill": "8.1.0",
         "whatwg-fetch": "^2.0.4"
     }

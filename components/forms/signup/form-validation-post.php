@@ -54,25 +54,25 @@ function chroma_form_processer(WP_REST_Request $request) {
       } else {
         //sanitize email of extra html and standardize
         $email = chroma_sanitize_input($email);
-        //prepare to insert post result values into database
-        $stmt = $conn->prepare("INSERT INTO signups (email,subscribe_type,ip_address,web_property,signup_url) VALUES (?, ?, ?, ?, ?)");
-        $type = $request->get_param('type');
-        $currURL = $request->get_param('currURL');
+        $type = chroma_sanitize_input($request->get_param('type'));
+        $currURL = chroma_sanitize_input($request->get_param('currURL'));
         $ip = getenv('HTTP_CLIENT_IP')?:getenv('HTTP_X_FORWARDED_FOR')?:getenv('HTTP_X_FORWARDED')?:getenv('HTTP_FORWARDED_FOR')?:getenv('HTTP_FORWARDED')?:getenv('REMOTE_ADDR');
         $prop = "HealthiGuide.com";
-        $stmt->bind_param("sssss", $email, $type, $ip, $prop, $currURL);
-        $stmt->execute();
-        $stmt->close();
-        $conn->close();
-        if ( $type == "unsubscribe" ) {
-          $emailErr = "Successfully Unsubscribed!";
-        } else if ( $type == "subscribe" ) {
-          $emailErr = "One More Step!";
+        //prepare to insert post result values into database
+        $stmt = "INSERT INTO signups (email, subscribe_type, ip_address, web_property, signup_url) VALUES ('$email', '$type', '$ip', '$prop', '$currURL') ON DUPLICATE KEY UPDATE email='$email', subscribe_type='$type'";
+        if ($conn->query($stmt) === TRUE) {
+          if ( $type == "unsubscribe" ) {
+            $emailErr = "Successfully Unsubscribed!";
+          } else if ( $type == "subscribe" ) {
+            $emailErr = ["Subscribed!", "Please check your email for confirmation."];
+          } else {
+            $emailErr = "Invalid email format.";
+          }
+          return new WP_REST_Response($emailErr, 200);
         } else {
-          $emailErr = "Invalid email format.";
+          return new WP_REST_Response("Error updating record: ". $conn->error, 404);
         }
-        //echo final success/fail message to front end
-        return new WP_REST_Response($emailErr, 200);
+        $conn->close();
       }
     }
   } catch(Exception $e) {

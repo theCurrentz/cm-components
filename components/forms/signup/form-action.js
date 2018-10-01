@@ -12,15 +12,31 @@ function chromaFormHandler () {
         let msg = text
         formSuccess(msg)
       })
-      .catch(error => console.log('error is', error))
+      .catch(error => console.log('Form submission error: ' + error))
   }
 
   function formSuccess (text) {
-    text = text.replace(/"/g,"")
-    var errorMSG = document.getElementById('errorMessage')
-    errorMSG.classList.remove('is-active')
-    errorMSG.innerText = text
-    errorMSG.classList.add('is-active')
+    text = text.split(',')
+    if (Array.isArray(text)) {
+      for(let i = 0, l = text.length; i < l; i++) {
+          text[i] = text[i].replace(/"/g,"")
+          text[i] = text[i].replace(/]/g,"")
+          text[i] = text[i].replace(/\[/g,"")
+      }
+      let errorMSG = document.getElementById('errorMessage'),
+          errorMSG2 = document.getElementById('errorMessage2')
+      console.log(errorMSG2)
+      errorMSG.classList.remove('is-active')
+      errorMSG.innerText = text[0]
+      errorMSG2.innerText = text[1]
+      errorMSG.classList.add('is-active')
+    } else {
+      text = text.replace(/"/g,"")
+      let errorMSG = document.getElementById('errorMessage')
+      errorMSG.classList.remove('is-active')
+      errorMSG.innerText = text
+      errorMSG.classList.add('is-active')
+    }
   }
 
   //main
