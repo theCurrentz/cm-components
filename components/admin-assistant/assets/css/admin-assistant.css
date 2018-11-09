@@ -152,6 +152,7 @@ gutenberg layout fixes
 }
 .chroma_tabs_box.is_active {
   display: block;
+  width: 100%;
   animation: _fade_in .4s;
   animation-fill-mode: forwards;
 }
