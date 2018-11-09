@@ -1,0 +1,26 @@
+<?php
+class FacebookShareCount implements Share_Counter {
+	public static function get_share_count( $url ) {
+		$facebook_app_id = get_option('fb_api_key');
+		$facebook_app_secret = get_option('fb_api_secret');
+		$access_token = $facebook_app_id . '|' . $facebook_app_secret;
+		$check_url = 'https://graph.facebook.com/v3.2/?id=' . urlencode(  $url ) . '&fields=engagement&access_token=' . $access_token;
+		$response = wp_remote_retrieve_body( wp_remote_get( $check_url ) );
+		$encoded_response = json_decode( $response, true );
+		$share_count = $encoded_response;
+    $post_id = url_to_postid( 'http://34.227.68.226/giveaways/homepod-giveaway/47531/' );
+    update_post_meta($post_id, '_facebook_share', $share_count);
+		return $share_count;
+	}
+
+  public static function get_share_count_endpoint(WP_REST_Request $request) {
+    $accepted_origins = array('https://idropnews.com','http://34.227.68.226');
+    if(!in_array($_SERVER['HTTP_ORIGIN'], $accepted_origins))
+      return new WP_REST_Response('You are definitely not allowed to do this. Get out of here!', 403);
+
+    if ( $request->get_param('share_url') && !empty($request->get_param('share_url')) ) {
+      $share_count = $self->get_share_count($request->get_param('share_url'));
+      return new WP_REST_Response($share_count, 200);
+    }
+  }
+}
