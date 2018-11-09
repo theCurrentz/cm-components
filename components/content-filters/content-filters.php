@@ -1,6 +1,6 @@
 <?php
 //custom filters for content
-
+global $post;
 //filter for view as one page slider options
 function convert_multipage_post( $content ) {
   $content = str_replace('<!--nextpage-->', '', $content);
@@ -10,14 +10,17 @@ function convert_multipage_post( $content ) {
 if (get_option('comments_button') == 'yes') {
   function add_comments_icon($content) {
       try {
-        if(empty($content) || (!is_single()) || ( get_post_type( get_the_ID() ) != 'post' ) )
+        if(empty($content) || (!is_single()) || ( get_post_type( get_the_ID() ) != 'post' ) || has_category('gallery'))
           return $content;
         $content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
         $dom = new DOMDocument();
         $dom->loadHTML($content);
         $comment = $dom->createElement('button');
         $comment_text = $dom->createTextNode("Comment");
-        $comment->setAttribute('class', 'comments-icon');
+        $comment->setAttribute('class', 'comments-icon disqus-comment-count');
+        $comment->setAttribute('data-disqus-url', 'http://34.227.68.226/deals/chase-launches-new-rewards-store-to-trade-points-for-new-apple-tech/87253/');
+        $post_id = get_the_ID($post);
+        $comment->setAttribute('data-disqus-identifier', "idropnews-$post_id");
         $comment->appendChild($comment_text);
         $ps = $dom->getElementsByTagName('p');
         if ($ps->length < 2) {
@@ -47,6 +50,7 @@ function chroma_custom_content_filter( $content ) {
 		$content = preg_replace('/<p>\s*(<blockquote.*>*.<\/blockquote>)\s*<\/p>/iU', '\1', $content);
     //never ever use text-align justify
     $content = str_replace('text-align: justify;', '', $content);
+    $content = str_replace('text-align: center;', '', $content);
     $content = str_replace('text-transform: uppercase;', '', $content);
     //remove these BS <p>&nbsp;</p>
     $content = str_replace('<p>&nbsp;</p>', '', $content);

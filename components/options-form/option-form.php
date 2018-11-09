@@ -22,8 +22,23 @@ function chroma_settings()  {
       update_option('comments_button', $_POST['comments']);
     else
       update_option('comments_button', null);
+    if (isset($_POST['fb-api-key']) && $_POST['fb-api-key'])
+      update_option('fb_api_key', $_POST['fb-api-key']);
+    else
+      update_option('fb_api_key', null);
+    if (isset($_POST['fb-api-secret']) && $_POST['fb-api-secret'])
+      update_option('fb_api_secret', $_POST['fb-api-secret']);
+    else
+      update_option('fb_api_secret', null);
+      if (isset($_POST['fb-api-secret']) && $_POST['fb-api-secret'])
+        update_option('proper_nouns', $_POST['proper_nouns']);
+      else
+        update_option('proper_nouns', null);
   }
   $comments_button_val = get_option('comments_button');
+  $fb_api = get_option('fb_api_key');
+  $fb_secret = get_option('fb_api_secret');
+  $proper_nouns = get_option('proper_nouns');
   ?>
   <div class="updated"><p><strong><?php _e('settings saved.', 'menu-test' ); ?></strong></p></div>
 
@@ -37,6 +52,25 @@ function chroma_settings()  {
           <th scope="row">Display Comment Button?</th>
           <td>
             <input type="checkbox" name="comments" <?php checked($comments_button_val,'yes'); ?> value="yes"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">Facebook API Key</th>
+          <td>
+            <input type="text" name="fb-api-key" value="<?php echo $fb_api; ?>"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">Facebook API Secret</th>
+          <td>
+            <input type="text" name="fb-api-secret" value="<?php echo $fb_secret; ?>"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">Proper Nouns</th>
+          <td>
+            <textarea type="textarea" class="widefat" cols="50" rows="5" wrap="hard" name="proper_nouns" value="<?php echo htmlentities(stripslashes($proper_nouns) ); ?>"><?php echo htmlentities(stripslashes($proper_nouns)); ?>
+            </textarea>
           </td>
         </tr>
         <tr valign="top">

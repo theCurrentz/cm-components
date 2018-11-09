@@ -89,7 +89,7 @@ function getPostLikeLink($post_id) {
 
     $output = '<div class="post-like">';
     if(hasAlreadyVoted($post_id)) {
-        $output .= ' <span title="I like this article" class="like alreadyvoted">
+        $output .= '<span class="heart" data-post_id="'.$post_id.'"><span title="I like this article" class="like alreadyvoted">
 						<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 			 			viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve" width="18px" height="18px">
 								<path style="fill:#ec2e44;" d="M24.85,10.126c2.018-4.783,6.628-8.125,11.99-8.125c7.223,0,12.425,6.179,13.079,13.543

@@ -6,6 +6,8 @@ import {checkPlag} from './modules/check-plag.js'
 checkPlag()
 import {tabsBox} from './modules/tabs-box.js'
 tabsBox()
+import {socialAnalysis} from './modules/social-sharing-analysis.js'
+socialAnalysis()
 
 if(document.getElementsByClassName('gutenberg-editor-page').length > 0) {
   window.send_to_editor = function(shortcode) {
