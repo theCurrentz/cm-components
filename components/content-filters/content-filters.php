@@ -23,7 +23,7 @@ if (get_option('comments_button') == 'yes') {
         if ($ps->length < 2) {
           return $content;
         }
-        $targetP = $ps[($ps->length) - 1];
+        $targetP = $ps[($ps->length) - 2];
         $targetP->parentNode->insertBefore($comment, $targetP);
         $content = preg_replace('/^<!DOCTYPE.+?>/', '', str_replace( array('<html>', '</html>', '<body>', '</body>'), array('', '', '', ''), $dom->saveHTML()));
         return $content;
@@ -45,6 +45,7 @@ function chroma_custom_content_filter( $content ) {
     $content = preg_replace('/<p>\s*(<a.*>*.<\/a>)\s*<\/p>/iU', '\1', $content);
 	  $content = preg_replace('/<p>\s*(<iframe.*>*.<\/iframe>)\s*<\/p>/iU', '\1', $content);
 		$content = preg_replace('/<p>\s*(<blockquote.*>*.<\/blockquote>)\s*<\/p>/iU', '\1', $content);
+    $content = preg_replace('/CONCLUSION/', 'Conclusion', $content);
     //never ever use text-align justify
     $content = str_replace('text-align: justify;', '', $content);
     $content = str_replace('text-transform: uppercase;', '', $content);
