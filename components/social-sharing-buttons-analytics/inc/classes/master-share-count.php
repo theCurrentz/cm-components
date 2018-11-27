@@ -4,18 +4,20 @@
  */
 abstract class MasterShareCount implements Share_Counter {
 	public static function get_share_count( $url ) {
-    $post_id = url_to_postid( 'http://34.227.68.226/giveaways/homepod-giveaway/47531/' );
+    $post_id = url_to_postid( $url );
     $fbCheck = FacebookShareCount::get_share_count($url);
-    $fbCheck = (!empty($fbCheck['error'])) ? get_post_meta($post_id, '_facebook_share', true) : FacebookShareCount::get_share_count($url)['engagement']['share_count'];
+    $fbCheck = (!empty($fbCheck['error'])) ? get_post_meta($post_id, '_facebook_share', true) : FacebookShareCount::get_share_count($url)['engagement'];
     $share_data = array(
-      'fb' => $fbCheck,
+      'fb' => $fbCheck['share_count'],
+      'fbr' => $fbCheck['reaction_count'],
+      'fbc' => $fbCheck["comment_count"],
       'tw' => intval(get_post_meta($post_id, '_twitter_share', true)),
       'flip' => intval(get_post_meta($post_id, '_flipboard_share', true)),
       'email' => intval(get_post_meta($post_id, '_email_share', true)),
       'reddit' => intval(get_post_meta($post_id, '_reddit_share', true))
     );
     $share_data['total'] = array_sum($share_data);
-    $share_span = "<span class='chromaShareData' data-facebook='".$share_data['fb']."' data-twitter='".$share_data['tw']."' data-flipboard='".$share_data['flip']."' data-email='".$share_data['email']."' data-reddit='".$share_data['reddit']."' data-total='".$share_data['total']."'>".$share_data['total']."</span>";
+    $share_span = "<span class='chromaShareData' data-facebook='".$share_data['fb']."' data-facebookr='".$share_data['fbr']."' data-facebookc='".$share_data['fbc']."' data-twitter='".$share_data['tw']."' data-flipboard='".$share_data['flip']."' data-email='".$share_data['email']."' data-reddit='".$share_data['reddit']."' data-total='".$share_data['total']."'>".$share_data['total']."</span>";
     return $share_span;
 	}
   public static function update_share_count_endpoint(WP_REST_Request $request) {

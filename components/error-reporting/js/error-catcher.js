@@ -7,21 +7,17 @@ var errorArray = []
 var console = (function(oldCons) {
     return {
         log: function(text){
-            oldCons.log(text);
-            // Your code
+            oldCons.log(`%c${text}`, 'color: blue;');
         },
         info: function (text) {
-            oldCons.info(text);
-            // Your code
+            oldCons.info(`%c${text}`, 'color: magenta;');
         },
         warn: function (text) {
-            oldCons.warn(text);
-            // Your code
+            oldCons.warn(`%c${text}`, 'color: orange;');
         },
         error: function (text) {
           errorArray.push(text)
-            oldCons.error(text);
-            // Your code
+            oldCons.warn(`%c${text}`, 'color: red;');
         }
     };
 } (window.console));
@@ -34,6 +30,7 @@ const chromaErrorHandler = () => {
   //listen for error events
   window.addEventListener('error', (event) => {
     errorArray.push(event.error)
+    postErrors(errorArray)
   })
 
   function postErrors(arr) {
@@ -46,7 +43,6 @@ const chromaErrorHandler = () => {
     arr.forEach( (e) => {
       e = e.toString()
       errorMsg += e + ' | ' + window.location.href + ' | Browser Info: ' + navigator.userAgent
-      console.log(errorMsg)
     })
     if(errorMsg.length > 0) {
       let fetch_prepare = location.protocol + '//' + window.location.hostname + '/wp-json/chroma/ecollector/'
@@ -70,40 +66,33 @@ const chromaErrorHandler = () => {
       })
     }
   }
-  function pageIsReady(fn) {
-    if (document.readyState != 'loading')
-      fn()
-    else if (document.addEventListener)
-      document.addEventListener('DOMContentLoaded', fn)
-    else {
-      document.attachEvent('onreadystatechange', () => {
-        if (document.readyState != 'loading')
-          fn()
-      })
-    }
-  }
-  pageIsReady(adTracker)
-  function adTracker() {
-    //custom error tracking for adsbygoogle
-    var googleAds = document.getElementsByClassName("adsbygoogle")
-    if (typeof googleAds != 'undefined' && googleAds.length > 0) {
-      const trackAdErrors = (googleAds) => {
-        for(let i = 0, length = googleAds.length; i < length; i++) {
-          if (googleAds[i].clientHeight < 90 ) {
-            console.error( 'Low performing ad: Ad height below 90')
-            errorArray.push('Low performing ad: Ad height below 90px | Parent Node Class & ID: ' + googleAds[i].parentNode.classList + ' ' + googleAds[i].parentNode.id)
-          }
-        }
-      }
-      trackAdErrors(googleAds) // invoke ad warning tracking
-    }
-  }
+  // function pageIsReady(fn) {
+  //   if (document.readyState != 'loading')
+  //     fn()
+  //   else if (document.addEventListener)
+  //     document.addEventListener('DOMContentLoaded', fn)
+  //   else {
+  //     document.attachEvent('onreadystatechange', () => {
+  //       if (document.readyState != 'loading')
+  //         fn()
+  //     })
+  //   }
+  // }
 
-  window.setTimeout(
-    () => {
-      postErrors(errorArray)
-    },
-    2000
-  )
+  // function adTracker() {
+  //   //custom error tracking for adsbygoogle
+  //   var googleAds = document.getElementsByClassName("adsbygoogle")
+  //   if (typeof googleAds != 'undefined' && googleAds.length > 0) {
+  //     const trackAdErrors = (googleAds) => {
+  //       for(let i = 0, length = googleAds.length; i < length; i++) {
+  //         if (googleAds[i].clientHeight < 90 ) {
+  //           console.error( 'Low performing ad: Ad height below 90')
+  //           errorArray.push('Low performing ad: Ad height below 90px | Parent Node Class & ID: ' + googleAds[i].parentNode.classList + ' ' + googleAds[i].parentNode.id)
+  //         }
+  //       }
+  //     }
+  //     trackAdErrors(googleAds) // invoke ad warning tracking
+  //   }
+  // }
 }
 chromaErrorHandler()

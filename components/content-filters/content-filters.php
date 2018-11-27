@@ -17,11 +17,16 @@ if (get_option('comments_button') == 'yes') {
         $dom->loadHTML($content);
         $comment = $dom->createElement('button');
         $comment_text = $dom->createTextNode("Comment");
-        $comment->setAttribute('class', 'comments-icon disqus-comment-count');
-        $comment->setAttribute('data-disqus-url', 'http://34.227.68.226/deals/chase-launches-new-rewards-store-to-trade-points-for-new-apple-tech/87253/');
+        $comment->setAttribute('class', 'comments-icon');
         $post_id = get_the_ID($post);
-        $comment->setAttribute('data-disqus-identifier', "idropnews-$post_id");
         $comment->appendChild($comment_text);
+        if (get_bloginfo('name') == 'iDrop News') {
+          $count = $dom->createElement('span');
+          $count->setAttribute('class','comments-count disqus-comment-count');
+          $count->setAttribute('data-disqus-identifier', "idropnews-$post_id");
+          $comment->appendChild($count);
+        }
+        //position comment button
         $ps = $dom->getElementsByTagName('p');
         if ($ps->length < 2) {
           return $content;

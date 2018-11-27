@@ -13,7 +13,8 @@ function social_share_columns_content($column_name, $post_ID) {
       : strtotime(get_the_date('Y-m-d', $post_ID));
     $yesterday = strtotime('-2 days');
     if ( $datetime > $yesterday ) {
-      $shares = MasterShareCount::get_share_count('https://www.idropnews.com/giveaways/homepod-giveaway/47531/');
+      $url = str_replace('http://34.227.68.226', 'https://www.idropnews.com', get_the_permalink($post_ID));
+      $shares = MasterShareCount::get_share_count($url);
       echo $shares;
     }
   }

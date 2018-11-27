@@ -8,8 +8,10 @@ export function socialAnalysis() {
           hovBox = document.createElement('div')
           hovBox.classList = 'social-hov-box is-active'
           hovBox.innerHTML =
-            '<span style="color: #0600ff">Total Shares: ' + e.dataset.total + '</span>' +
-            'Facebook: ' + e.dataset.facebook + '</br>' +
+            '<span style="color: #0600ff; display: block;">Total Shares: ' + e.dataset.total + '</span>' +
+            'FB Shares: ' + e.dataset.facebook + '</br>' +
+            'FB Reactions: ' + e.dataset.facebookr + '</br>' +
+            'FB Comments: ' + e.dataset.facebookc + '</br>' +
             'Twitter: ' + e.dataset.twitter + '</br>' +
             'Reddit: ' + e.dataset.reddit + '</br>' +
             'Flipboard: ' + e.dataset.flipboard + '</br>' +
