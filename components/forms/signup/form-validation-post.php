@@ -61,7 +61,7 @@ function chroma_form_processer(WP_REST_Request $request) {
         //prepare to insert post result values into database
         $stmt = "INSERT INTO signups (email, subscribe_type, ip_address, web_property, signup_url) VALUES ('$email', '$type', '$ip', '$prop', '$currURL') ON DUPLICATE KEY UPDATE email='$email', subscribe_type='$type'";
         if ($conn->query($stmt) === TRUE) {
-          if ( $type == "unsubscribe" ) {
+          if ( in_array($type, array("unsubscribe", "fblogin" ))) {
             $emailErr = "Successfully Unsubscribed!";
           } else if ( $type == "subscribe" ) {
             $emailErr = ["Subscribed!", "Please check your email for confirmation."];

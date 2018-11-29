@@ -4,26 +4,26 @@
 var errorArray = []
 //console error override
 // define a new console which will allow us to listen to custom console errors
-var console = (function(oldCons) {
-    return {
-        log: function(text){
-            oldCons.log(`%c${text}`, 'color: blue;');
-        },
-        info: function (text) {
-            oldCons.info(`%c${text}`, 'color: magenta;');
-        },
-        warn: function (text) {
-            oldCons.warn(`%c${text}`, 'color: orange;');
-        },
-        error: function (text) {
-          errorArray.push(text)
-            oldCons.warn(`%c${text}`, 'color: red;');
-        }
-    };
-} (window.console));
-
-//Then redefine the old console
-window.console = console;
+// var console = (function(oldCons) {
+//     return {
+//         log: function(text){
+//             oldCons.log(`%c${text}`, 'color: blue;');
+//         },
+//         info: function (text) {
+//             oldCons.info(`%c${text}`, 'color: magenta;');
+//         },
+//         warn: function (text) {
+//             oldCons.warn(`%c${text}`, 'color: orange;');
+//         },
+//         error: function (text) {
+//           errorArray.push(text)
+//             oldCons.warn(`%c${text}`, 'color: red;');
+//         }
+//     };
+// } (window.console));
+//
+// //Then redefine the old console
+// window.console = console;
 
 // Add a new listener to track event immediately, then send errors after a certain time threshold
 const chromaErrorHandler = () => {

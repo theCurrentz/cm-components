@@ -61,16 +61,13 @@ var socialShareMaster = function() {
   }
   this['copylink'] = () => {
     let urlInput = document.createElement('input')
-    //urlInput.style.display = 'none'
     urlInput.setAttribute('value', window.location)
-    urlInput.setAttribute('style', 'visibility: hidden; opacity: 0; position: fixed; top: 0px;')
+    urlInput.setAttribute('style', 'opacity: 0; position: absolute; top: 0px; z-index: -100; transform: translateX(-100vw);')
     document.body.appendChild(urlInput)
     urlInput.select()
     document.execCommand('copy')
+    urlInput.remove()
     this.feedbackMsg('Copied to clipboard.')
-    setTimeout(()=> {
-      urlInput.remove()
-    }, 800)
     shareThisUrl = null
     shareTypeMsg = 'Copy Link'
   }
@@ -162,7 +159,8 @@ var socialShareMaster = function() {
       //execute analytics
       if (window._gaq && window._gaq._getTracker)
         ga('send', 'socialShare', `${shareTypeMsg} social click`, escape(window.location.href));
-      if (dataLayer == 'undefined') {
+      var dataLayer = dataLayer || []
+      if (typeof dataLayer != 'undefined') {
         dataLayer.push({
           'event': {
             'eventName': 'socialShare',

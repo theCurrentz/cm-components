@@ -32,25 +32,30 @@ class social_share_component {
     'setPrint' => false,
     'classList' => null,
     'id' => null,
-    'moreBox' => false
+    'moreBox' => false,
+    'dotsOverrideClass' => null
   )) {
-      $classList = (!empty($config['classList'])) ? $config['classList'] : '';
-      $id = (!empty($config['id'])) ? $config['id'] : '';
-      unset($config['classList']);
-      unset($config['id']);
-    echo '<div class="social-sharing-controller '.$classList.'" id="'.$id.'">';
-      foreach($config as $key => $value) {
-        if ($value && $key != 'moreBox') {
-          $this->setButton($key);
+      if (!empty($config['dotsOverrideClass'])) {
+        echo '<button class="share-button '.$config['dotsOverrideClass'].'" data-share="more" aria-label="click for more sharing options" title="click for more sharing options"></button>';
+      } else {
+        $classList = (!empty($config['classList'])) ? $config['classList'] : '';
+        $id = (!empty($config['id'])) ? $config['id'] : '';
+        unset($config['classList']);
+        unset($config['id']);
+      echo '<div class="social-sharing-controller '.$classList.'" id="'.$id.'">';
+        foreach($config as $key => $value) {
+           if ($value && !(in_array($key, array('moreBox', 'dotsOverrideClass')))) {
+            $this->setButton($key);
+          }
         }
       }
 
     echo '</div>';
     if (!empty($config['moreBox']) && $config['moreBox'] === true) {
-        $this->createMoreShareNodes();
+      add_action('wp_footer', array($this, 'createMoreShareNodes' ), 100);
     }
   }
-  private function createMoreShareNodes() {
+  function createMoreShareNodes() {
     echo '<div class="more-sharing" id="more-sharing"><span class="more-sharing-title">Social Sharing<span class="more-sharing-close" id="msc"></span></span>';
       $generic_config = array(
         'setFacebook',
