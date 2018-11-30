@@ -16,22 +16,23 @@ const fbInitializer = function() {
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
 
-   this.fbLogin = () => {
+   this.fbLogin = (el) => {
      FB.login(function(response) {
-       checkLoginState();
+       checkLoginState(el);
        // handle the response
      }, {scope: 'email,user_likes, user_birthday'});
    }
 
-   function checkLoginState() {
+   function checkLoginState(el) {
      FB.getLoginStatus(function(response) {
-       statusChangeCallback(response);
+       statusChangeCallback(response, el);
      });
    }
 
-    function statusChangeCallback(response) {
+    function statusChangeCallback(response, el) {
       if (response.status === 'connected') {
-        formProceszr.facebookSignup;
+        console.log('user logged in and ready to submit data')
+        formProceszr.facebookSignup(el);
       }
     }
 }

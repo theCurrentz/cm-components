@@ -19,13 +19,15 @@ function chromaFormHandler () {
       .catch(error => console.log('Form submission error: ' + error))
   }
 
-  this.facebookSignup = () => {
+  this.facebookSignup = (el) => {
+    console.log(el)
     FB.api("/me", "GET", {
       fields: "id,name,email"
     },
     function(e) {
       var t = "https://" + window.location.hostname + "/form-processing/",
-          n = encodeURI(window.location);
+          n = encodeURI(window.location),
+          type = 'fblogin'
           var dataBody = `&email=${e.email}&type=fblogin&currURL=${n}`
           var formOptions = {
             method: 'post',
@@ -37,8 +39,10 @@ function chromaFormHandler () {
             .then(text => {
               let msg = text
               formSuccess(msg)
+              if (el.getAttribute('data-next') !== null && el.getAttribute('data-next').indexOf('http') !== -1)
+                window.location = el.getAttribute('data-next')
             })
-            .catch(error => console.log('Form submission error: ' + error))
+            .catch(error => alert('Facebook Login Error: ' + error))
     })
   }
 
@@ -74,11 +78,12 @@ function chromaFormHandler () {
           submitForm(document.getElementById('subscribeEmail').value, 'subscribe')
         })
       }
-
-      if (typeof document.getElementById('fb-arrow') != 'undefined') {
-        document.getElementById('fb-arrow').addEventListener('click', (event) => {
-          event.preventDefault()
-          fbApiInit.fbLogin()
+      if (document.getElementsByClassName('fb-arrow').length > 0) {
+        [].forEach.call(document.getElementsByClassName('fb-arrow'), (el) => {
+          el.addEventListener('click', (event) => {
+            event.preventDefault()
+            fbApiInit.fbLogin(el)
+          })
         })
       }
 
