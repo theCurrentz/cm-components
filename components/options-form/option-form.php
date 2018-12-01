@@ -30,15 +30,28 @@ function chroma_settings()  {
       update_option('fb_api_secret', $_POST['fb-api-secret']);
     else
       update_option('fb_api_secret', null);
-      if (isset($_POST['fb-api-secret']) && $_POST['fb-api-secret'])
-        update_option('proper_nouns', $_POST['proper_nouns']);
-      else
-        update_option('proper_nouns', null);
+    if (isset($_POST['proper_nouns']) && $_POST['proper_nouns'])
+      update_option('proper_nouns', $_POST['proper_nouns']);
+    else
+      update_option('proper_nouns', null);
+    if (isset($_POST['theme_color']) && $_POST['theme_color'])
+      update_option('theme_color', $_POST['theme_color']);
+    else
+      update_option('theme_color', null);
+    if (isset($_POST['icon_url']) && $_POST['icon_url'])
+      update_option('icon_url', $_POST['icon_url']);
+    else
+      update_option('icon_url', null);
   }
+
+
   $comments_button_val = get_option('comments_button');
   $fb_api = get_option('fb_api_key');
   $fb_secret = get_option('fb_api_secret');
   $proper_nouns = get_option('proper_nouns');
+  $theme_color = get_option('theme_color');
+  $icon_url = get_option('icon_url');
+
   ?>
   <div class="updated"><p><strong><?php _e('settings saved.', 'menu-test' ); ?></strong></p></div>
 
@@ -69,8 +82,20 @@ function chroma_settings()  {
         <tr valign="top">
           <th scope="row">Proper Nouns</th>
           <td>
-            <textarea type="textarea" class="widefat" cols="50" rows="5" wrap="hard" name="proper_nouns" value="<?php echo htmlentities(stripslashes($proper_nouns) ); ?>"><?php echo htmlentities(stripslashes($proper_nouns)); ?>
-            </textarea>
+            <?php $proper_nouns = str_replace(' ', '', $proper_nouns); ?>
+            <textarea type="textarea" class="widefat" cols="50" rows="5" wrap="hard" name="proper_nouns" value="<?php echo trim(htmlentities(stripslashes($proper_nouns)) ); ?>"><?php echo trim(htmlentities(stripslashes($proper_nouns))); ?></textarea>
+          </td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">Web App Theme Color</th>
+          <td>
+            <input type="text" name="theme_color" value="<?php echo htmlentities(stripslashes($theme_color) ); ?>"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">Web App Icon URL (*512x512)</th>
+          <td>
+            <input type="text" name="icon_url" class="widefat" value="<?php echo htmlentities(stripslashes($icon_url) ); ?>"/>
           </td>
         </tr>
         <tr valign="top">
@@ -84,4 +109,46 @@ function chroma_settings()  {
     </form>
   </div>
 <?php
+  //generate manifest.json
+  if (isset($_POST['icon_url']) && $_POST['icon_url']) {
+    function getAppShortName($words) {
+      if(count(explode(" ",$words)) > 1 &&  strlen($words) > 8) {
+        $abbr = '';
+        $words = explode(" ",$words);
+        foreach($words as $word) {
+          $abbr .= strtoupper($word[0]);
+        }
+        return $abbr;
+      } else
+        return $words;
+    }
+
+    $appName = get_bloginfo( 'name' );
+    $appShortName = getAppShortName($appName);
+
+    $manifest_data =
+    "{
+    'name': '$appName',
+    'short_name': '$appShortName',
+    'lang': 'en-US',
+    'start_url': '/',
+    'display': 'minimal-ui',
+    'orientation': 'any',
+    'theme_color': '$theme_color',
+    'icons': [
+      {
+        'src': '$icon_url',
+        'sizes': '512x512',
+        'type': 'image/png'
+      }
+    ],
+    'background_color': '#fff'
+    }";
+    $manifest_data = str_replace("'", '"', $manifest_data);
+    $manifest_file = dirname(__DIR__) .
+  '/web-app-manifest/manifest.json';
+    $handle = fopen($manifest_file, 'w') or die('Cannot open file:  '.$manifest_file);
+    fwrite($handle, $manifest_data);
+    fclose($handle);
+  }
 }

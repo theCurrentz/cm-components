@@ -3,3 +3,4 @@
 =======
 *.log
 >>>>>>> atl-nov2018
+/components/web-app-manifest/manifest.json
