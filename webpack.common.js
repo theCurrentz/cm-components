@@ -1,6 +1,8 @@
 const path = require('path')
 //const HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require("webpack")
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const autoprefixer = require('autoprefixer')
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin")
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
@@ -8,10 +10,11 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
     entry: {
         app: './src/index.js',
-        errorcatcher: './components/error-reporting/js/error-catcher.js'
+        errorcatcher: './components/error-reporting/js/error-catcher.js',
+        quiz: './components/quiz/src/quiz-app.js',
     },
     output: {
-        filename: '[name].bundle.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'dist')
     },
     devServer: {
@@ -37,12 +40,20 @@ module.exports = {
         // new HtmlWebpackPlugin({
         //     title: 'Output Management'
         // }),
-        new MiniCSSExtractPlugin({})
+        new MiniCSSExtractPlugin({
+            filename: "cmquiz.css",
+        }),
+        new webpack.LoaderOptionsPlugin({
+          options: {
+            postcss: [
+              autoprefixer()
+            ]
+          }
+        })
     ],
     module: {
         rules: [
             {
-              enforce: "pre",
               test: /\.js$/,
               exclude: /node_modules/,
               use: [
@@ -56,26 +67,19 @@ module.exports = {
                   {
                     loader: 'babel-loader',
                     query: {
-                        presets: ['es2015']
+                        presets: ['env']
                     }
                   }
               ]
             },
             {
-              test: /\.(sass|scss)$/,
-              use: [
-                "style-loader",
-                "css-loader",
-                "sass-loader"
-              ]
-            },
-            {
-                test: /\.css$/,
+                test: /\.(sa|sc|c)ss$/,
+                exclude: /node_modules/,
                 use: [
-                  {
-                    loader: MiniCSSExtractPlugin.loader,
-                  },
-                  'css-loader'
+                  MiniCSSExtractPlugin.loader,
+                  "css-loader",
+                  "postcss-loader",
+                  "sass-loader"
                 ]
             },
         ]

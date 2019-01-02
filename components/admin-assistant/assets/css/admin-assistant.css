@@ -4,6 +4,11 @@ html {
 #site-header {
   margin-top: 30px;
 }
+#app {
+  width: 100%;
+  margin: 12px auto;
+  padding: 0px 16px 0px 0px;
+}
 @media (max-width: 659px) {
   .hamburger__container, .site-branding, .social-share-header {
      top: 30px !important;
@@ -193,4 +198,25 @@ gutenberg layout fixes
 }
 .social-hov-box.is-active {
   display: flex;
+}
+.edit-post-layout.is-sidebar-opened .components-notice-list {
+  margin-left: 45px;
+}
+@media (min-width: 782px) {
+  .edit-post-header {
+    left: 210px !important;
+  }
+}
+.wp-submenu {
+  padding: 0px !important;
+}
+.wp-submenu .wp-submenu-head {
+  display: none !important;
+}
+.wp-submenu.is-active {
+  max-height: 800px !important;
+  padding: 12px 0px !important;
+}
+.edit-post-layout .components-notice-list {
+  left: 210px !important;
 }

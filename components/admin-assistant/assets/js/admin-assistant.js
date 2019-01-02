@@ -26,6 +26,6 @@ let adminMenus = document.querySelectorAll('a.wp-has-submenu');
     [].forEach.call( adminMenus, (el2) => {
       el2.parentNode.children[1].setAttribute('style', '')
     })
-    e.target.parentNode.querySelector('.wp-submenu').setAttribute('style', 'max-height: 500px !important;padding: 12px !important;')
+    el.parentNode.querySelector('.wp-submenu').classList.toggle('is-active')
   })
 })

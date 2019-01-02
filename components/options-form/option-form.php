@@ -42,6 +42,10 @@ function chroma_settings()  {
       update_option('icon_url', $_POST['icon_url']);
     else
       update_option('icon_url', null);
+    if (isset($_POST['enable_quizzes']) && $_POST['enable_quizzes'])
+      update_option('enable_quizzes', $_POST['enable_quizzes']);
+    else
+      update_option('enable_quizzes', null);
   }
 
 
@@ -51,6 +55,7 @@ function chroma_settings()  {
   $proper_nouns = get_option('proper_nouns');
   $theme_color = get_option('theme_color');
   $icon_url = get_option('icon_url');
+  $enable_quizzes = get_option('enable_quizzes');
 
   ?>
   <div class="updated"><p><strong><?php _e('settings saved.', 'menu-test' ); ?></strong></p></div>
@@ -96,6 +101,12 @@ function chroma_settings()  {
           <th scope="row">Web App Icon URL (*512x512)</th>
           <td>
             <input type="text" name="icon_url" class="widefat" value="<?php echo htmlentities(stripslashes($icon_url) ); ?>"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">Enable Quizzes?</th>
+          <td>
+            <input type="checkbox" name="enable_quizzes" <?php checked($enable_quizzes,'yes'); ?> value="yes"/>
           </td>
         </tr>
         <tr valign="top">

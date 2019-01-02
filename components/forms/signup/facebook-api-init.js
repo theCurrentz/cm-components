@@ -1,7 +1,8 @@
+
 const fbInitializer = function() {
   window.fbAsyncInit = function() {
     FB.init({
-      appId            : '747651692099048',
+      appId            : chromaApp.fbAppID,
       autoLogAppEvents : true,
       xfbml            : true,
       version          : 'v3.2'
@@ -20,7 +21,7 @@ const fbInitializer = function() {
      FB.login(function(response) {
        checkLoginState(el);
        // handle the response
-     }, {scope: 'email,user_likes, user_birthday'});
+     }, {scope: 'email'});
    }
 
    function checkLoginState(el) {
@@ -36,3 +37,5 @@ const fbInitializer = function() {
       }
     }
 }
+export default fbInitializer;
+//const fbApiInit = new fbInitializer()

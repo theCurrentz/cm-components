@@ -16,3 +16,13 @@ function chroma_caption_hyperlink_save($post, $attachment) {
   return $post;
 }
 add_filter( 'attachment_fields_to_save', 'chroma_caption_hyperlink_save', 10, 2 );
+
+register_meta(
+  'post',
+  'chroma_caption_hyperlink',
+  array(
+    'type' => 'string',
+    'single' => true,
+    'show_in_rest' => true,
+  )
+);

@@ -61,12 +61,12 @@ function chroma_form_processer(WP_REST_Request $request) {
         //prepare to insert post result values into database
         $stmt = "INSERT INTO signups (email, subscribe_type, ip_address, web_property, signup_url) VALUES ('$email', '$type', '$ip', '$prop', '$currURL') ON DUPLICATE KEY UPDATE email='$email', subscribe_type='$type'";
         if ($conn->query($stmt) === TRUE) {
-          if ( in_array($type, array("unsubscribe", "fblogin" ))) {
+          if ( in_array($type, array("unsubscribe") )) {
             $emailErr = "Successfully Unsubscribed!";
-          } else if ( $type == "subscribe" ) {
+          } else if ( in_array($type, array("subscribe", "quiz-subscribe", "fblogin"))) {
             $emailErr = ["Subscribed!", "Please check your email for confirmation."];
           } else {
-            $emailErr = "Invalid email format.";
+            $emailErr = ["Invalid Subscription Type", "Please try again later."];
           }
           return new WP_REST_Response($emailErr, 200);
         } else {

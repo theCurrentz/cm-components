@@ -8,12 +8,12 @@ function error_reporting_enqueue() {
   //js versioning
   $jstime = filemtime( dirname(__FILE__) . '/js/error-catcher.js' );
   wp_enqueue_script( 'error-catcher', plugin_dir_url('chroma_wp_components') .
-'chroma_wp_components/dist/errorcatcher.bundle.js', '', $jstime, false );
+'chroma_wp_components/dist/errorcatcher.js', '', $jstime, false );
 }
 add_action( 'wp_enqueue_scripts', 'error_reporting_enqueue');
 
 ////async script loading function - very important, lets make sure we aren't bottle necking load by our master script
-function error_reporting_async_scripts( $tag, $handle, $src ) {
+function error_reporter_async_scripts( $tag, $handle, $src ) {
     // the handles of the enqueued scripts we want to async
     $async_scripts = array( 'error-catcher' );
 
@@ -23,4 +23,4 @@ function error_reporting_async_scripts( $tag, $handle, $src ) {
 
     return $tag;
 }
-add_filter( 'script_loader_tag', 'error_reporting_async_scripts', 10, 3 );
+add_filter( 'script_loader_tag', 'error_reporter_async_scripts', 10, 3 );

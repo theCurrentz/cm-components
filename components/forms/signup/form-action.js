@@ -1,9 +1,9 @@
-function chromaFormHandler () {
+function chromaFormHandler (callBack = null) {
   //data
   var postURL = location.protocol + '//' + window.location.hostname + '/wp-json/chroma/form-processer/',
       currURL = encodeURI(window.location)
 
-  function submitForm (formIdVal, type) {
+  function submitForm (formIdVal, type = 'subscribe') {
     var dataBody = '&email=' + formIdVal + '&type=' + type + '&currURL=' + currURL
     var formOptions = {
       method: 'post',
@@ -14,7 +14,9 @@ function chromaFormHandler () {
       .then(response => { return response.text() })
       .then(text => {
         let msg = text
-        formSuccess(msg)
+        if (formSuccess(msg) && callBack !== null) {
+          callBack()
+        }
       })
       .catch(error => console.log('Form submission error: ' + error))
   }
@@ -38,11 +40,13 @@ function chromaFormHandler () {
             .then(response => { return response.text() })
             .then(text => {
               let msg = text
-              formSuccess(msg)
+              if (formSuccess(msg) && callBack !== null) {
+                callBack()
+              }
               if (el.getAttribute('data-next') !== null && el.getAttribute('data-next').indexOf('http') !== -1)
                 window.location = el.getAttribute('data-next')
             })
-            .catch(error => alert('Facebook Login Error: ' + error))
+            .catch(error => {alert('Facebook Login Error. Please try again later.'); console.log(e)})
     })
   }
 
@@ -67,15 +71,20 @@ function chromaFormHandler () {
       errorMSG.innerText = text
       errorMSG.classList.add('is-active')
     }
+    return true
   }
   this.init = function() {
     //main
     try {
-
-      if (typeof document.getElementById('subscribe') != 'undefined') {
-        document.getElementById('subscribe').addEventListener('submit', (event) => {
+      if (doesExist(document.getElementById('subscribe'))) {
+        var subscriber = document.getElementById('subscribe')
+        subscriber.addEventListener('submit', (event) => {
           event.preventDefault()
-          submitForm(document.getElementById('subscribeEmail').value, 'subscribe')
+          //gather context data
+          var type = subscriber.getAttribute('data-type')
+          type = (type !== null) ? type : 'subscribe'
+          //@params value, type
+          submitForm(document.getElementById('subscribeEmail').value, type)
         })
       }
       if (document.getElementsByClassName('fb-arrow').length > 0) {
@@ -87,7 +96,7 @@ function chromaFormHandler () {
         })
       }
 
-      if (typeof document.getElementById('unsub') != 'undefined') {
+      if (doesExist(document.getElementById('unsub'))) {
         document.getElementById('unsub').addEventListener('submit', (event) => {
           event.preventDefault()
           submitForm(document.getElementById('unsubEmail').value, 'unsubscribe')
@@ -95,10 +104,10 @@ function chromaFormHandler () {
       }
 
     } catch (e) {
+      console.log(e)
     }
   }
-
 }
-const fbApiInit = new fbInitializer()
-const formProceszr = new chromaFormHandler()
-formProceszr.init()
+export default chromaFormHandler;
+// const formProceszr = new chromaFormHandler()
+// formProceszr.init()

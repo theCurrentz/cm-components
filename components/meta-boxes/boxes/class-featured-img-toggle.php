@@ -29,10 +29,7 @@ abstract class meta_box_featured_img_toggle {
       </select>
       <label>Video Embed Override</label>
       <br />
-      <textarea type="textarea" class="widefat" cols="30" rows="10" wrap="hard" name="embed-code" value="<?php echo trim(htmlentities(stripslashes($embedCode))); ?>"/>
-        <?php echo trim(htmlentities(stripslashes($embedCode))); ?>
-      </textarea>
-    </p>
+      <textarea type="textarea" class="widefat" cols="30" rows="10" wrap="hard" name="embed-code" value="<?php echo str_replace(' ', '', trim(htmlentities(stripslashes($embedCode)))); ?>"/><?php echo str_replace(' ', '', trim(htmlentities(stripslashes($embedCode)))); ?></textarea></p>
   <?php
   }
 

@@ -19,8 +19,8 @@ function chroma_error_collector(WP_REST_Request $request) {
     if ( $request->get_param('client_error') && !empty($request->get_param('client_error')) ) {
       //initialize server sql connection variables
       $servername = DB_HOST;
-      $username = LIMITED_USER;
-      $password = LIMITED_PASSWORD;
+      $username = DB_USER;
+      $password = DB_PASSWORD;
       $db_name = DB_NAME;
 
       $conn = new mysqli($servername, $username, $password, $db_name);

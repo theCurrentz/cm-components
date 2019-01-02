@@ -48,3 +48,59 @@ function force_default_admin_theme( $result ) {
     return 'chroma';
 }
 add_filter( 'get_user_option_admin_color', 'force_default_admin_theme' );
+
+//rename dashboard menu
+add_action('admin_menu', 'rename_dashboard', 999);
+function rename_dashboard() {
+	global $menu;
+	// Pinpoint menu item
+	$pick = recursive_array_search_php_91365( 'Dashboard', $menu );
+	$menu[$pick][0] = get_bloginfo('name');
+}
+
+// http://www.php.net/manual/en/function.array-search.php#91365
+function recursive_array_search_php_91365( $needle, $haystack )
+{
+    foreach( $haystack as $key => $value )
+    {
+        $current_key = $key;
+        if(
+            $needle === $value
+            OR (
+                is_array( $value )
+                && recursive_array_search_php_91365( $needle, $value ) !== false
+            )
+        )
+        {
+            return $current_key;
+        }
+    }
+    return false;
+}
+
+function disable_default_dashboard_widgets() {
+	global $wp_meta_boxes;
+	// wp..
+	unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_activity']);
+	unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_right_now']);
+	unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_recent_comments']);
+	unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_incoming_links']);
+	unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_plugins']);
+	unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_primary']);
+	unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_secondary']);
+	unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_quick_press']);
+	unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_recent_drafts']);
+	// yoast seo
+	unset($wp_meta_boxes['dashboard']['normal']['core']['yoast_db_widget']);
+}
+remove_action( 'welcome_panel', 'wp_welcome_panel' );
+add_action('wp_dashboard_setup', 'disable_default_dashboard_widgets', 999);
+remove_action( 'try_gutenberg_panel', 'wp_try_gutenberg_panel' );
+
+function helloMessage() {
+	$user = wp_get_current_user();
+	echo "<h1 style='padding: 12px 4%;font-size: 2rem;font-weight: 800;line-height: 1.35;'>Hello ".$user->display_name."</h1><br />";
+}
+add_action( 'welcome_panel', 'helloMessage' );
+//implement reddit trending topic api
+//https://www.reddit.com/r/Apple/top/.json?limit=10
