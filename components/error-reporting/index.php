@@ -7,8 +7,8 @@ function chroma_error_handler() {
 function error_reporting_enqueue() {
   //js versioning
   $jstime = filemtime( dirname(__FILE__) . '/js/error-catcher.js' );
-  wp_enqueue_script( 'error-catcher', plugin_dir_url('chroma_wp_components') .
-'chroma_wp_components/dist/errorcatcher.js', '', $jstime, false );
+  wp_enqueue_script( 'error-catcher', plugin_dir_url('cm-components') .
+'cm-components/dist/errorcatcher.js', '', $jstime, false );
 }
 add_action( 'wp_enqueue_scripts', 'error_reporting_enqueue');
 

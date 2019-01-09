@@ -11,6 +11,7 @@ class signupWidget extends WP_Widget {
     $widget_options = array(
       'classname' => 'signupWidget',
       'description' => 'Displays a newsletter signup box that logs entries in wp database.',
+
     );
     // Instantiate the parent object
     parent::__construct( false, 'Sign Up' );
@@ -19,8 +20,10 @@ class signupWidget extends WP_Widget {
   function widget( $args, $instance ) {
      $title = apply_filters( 'widget_title', $instance[ 'title' ] );
      $copy = apply_filters( 'widget_title', $instance[ 'copy' ] );
+     $sticky = ($instance[ 'sticky' ]) ? 'true' : 'false';
+     $willStick = ($sticky === 'true') ? ' sticky' : null;
 		// Widget output
-    echo '<div class="signup_sidebar">
+    echo '<div class="signup_sidebar'.$willStick.'">
     		<div class="ball">
     			<!-- sign up form with html validation -->
     			<form id="subscribe" class="signup_sidebar--form" method="post">
@@ -40,18 +43,23 @@ class signupWidget extends WP_Widget {
     $instance = $old_instance;
     $instance[ 'title' ] = strip_tags( $new_instance[ 'title' ] );
     $instance[ 'copy' ] = strip_tags( $new_instance[ 'copy' ] );
+    $instance[ 'sticky' ] = strip_tags( $new_instance[ 'sticky' ] );
     return $instance;
 	}
 
 	function form( $instance ) {
     $title = ! empty( $instance['title'] ) ? $instance['title'] : '';
-    $copy = ! empty( $instance['copy'] ) ? $instance['copy'] : ''; ?>
+    $copy = ! empty( $instance['copy'] ) ? $instance['copy'] : '';
+    $sticky = ! empty( $instance['sticky'] ) ? $instance['sticky'] : ''; ?>
     <p>
       <label for="<?php echo $this->get_field_id( 'title' ); ?>">Title:</label>
       <input type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo esc_attr( $title ); ?>" />
       <br>
       <label for="<?php echo $this->get_field_id( 'copy' ); ?>">Copy:</label>
       <input type="text" id="<?php echo $this->get_field_id( 'copy' ); ?>" name="<?php echo $this->get_field_name( 'copy' ); ?>" value="<?php echo esc_attr( $copy ); ?>" />
+      <br>
+      <label for="<?php echo $this->get_field_id( 'sticky' ); ?>">Sticky?</label>
+      <input class="checkbox" type="checkbox" id="<?php echo $this->get_field_id( 'sticky' ); ?>" <?php checked( $sticky , 'on'); ?> name="<?php echo $this->get_field_name( 'sticky' ); ?>" />
     </p><?php
   }
 }

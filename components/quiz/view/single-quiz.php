@@ -5,7 +5,11 @@ $ai_wp_data [AI_WP_DEBUGGING] |= AI_DEBUG_NO_INSERTION;
 ?>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <div class="cm-quiz-single">
-    <aside class="cm-quiz" id="cm-quiz" data-id="<?php the_ID();?>" >
+    <aside class="cm-quiz" id="cm-quiz" data-id="<?php the_ID();?>" data-link="<?php the_permalink(); ?>">
+    <?php
+         $cssTime = filemtime( plugin_dir_path( __DIR__ ) .'src/style.sass' );
+        echo '<link rel="stylesheet" href="'.plugin_dir_url("cm-components") . 'cm-components/dist/cmquiz.css?'.$cssTime.'" type="text/css" media="all"/>';
+      ?>
       <div class="cm-quiz-title-bar"><div class="cm-quiz-title"><?php the_title() ?></div><div class="cm-quiz-prog" id="cm-quiz-prog">0</div></div>
       <div class="cm-quiz-box">
           <?php the_content(); ?>
@@ -40,13 +44,13 @@ $ai_wp_data [AI_WP_DEBUGGING] |= AI_DEBUG_NO_INSERTION;
             'classList' => 'cm-quiz-share'
           )
         );
-        $jstime = filemtime( plugin_dir_path( __DIR__ ) .'src/quiz-app.js' );
-        $cssTime = filemtime( plugin_dir_path( __DIR__ ) .'src/style.sass' );
-        $jsPath = plugin_dir_url('chroma_wp_components') . 'chroma_wp_components/dist/quiz.js?' . $jstime;
-        echo '<link rel="stylesheet" href="'.plugin_dir_url("chroma_wp_components") . 'chroma_wp_components/dist/cmquiz.css?'.$cssTime.'" type="text/css" media="all"/>';
-        echo "<script defer src='$jsPath'></script></script>";
         ?>
       </aside>
     </div>
   </div>
+  <?php
+        $jstime = filemtime( plugin_dir_path( __DIR__ ) .'src/quiz-app.js' );
+        $jsPath = plugin_dir_url('cm-components') . 'cm-components/dist/quiz.js?' . $jstime;
+        echo "<script id='cm-quiz-script'  defer src='$jsPath'></script></script>";
+    ?>
 <?php wp_footer();

@@ -84,7 +84,7 @@ class chroma_related_posts extends WP_Widget {
 		<?php
 	}
 //Update widget values
-  public function update($new_instance, $old_instance){
+  public function update($new_instance, $old_instance) {
       $instance = array();
       $instance['title'] = (!empty($new_instance['title'])) ? strip_tags($new_instance['title']) : '';
       $instance['count'] = (!empty($new_instance['count'])) ? strip_tags($new_instance['count']) : '';
@@ -92,45 +92,79 @@ class chroma_related_posts extends WP_Widget {
   }
 
 	//related posts query
-	function chroma_get_related_posts( $post_id, $related_count, $args = array() ) {
-		$args = wp_parse_args( (array) $args, array(
-			'orderby' => 'rand',
-			'return'  => 'query', // Valid values are: 'query' (WP_Query object), 'array' (the arguments array)
-		) );
+	function chroma_get_related_posts( $post_id, $related_count ) {
 
-		$related_args = array(
-			'post_type'      => get_post_type( $post_id ),
-			'posts_per_page' => $related_count,
+    //fields
+    $LIMIT = $related_count;
+    $remainder = $LIMIT;
+    $count = 0;
+    $matched_posts = array();
+
+    //focus keyword matching
+    $focus_keyword = get_post_meta($post_id, '_yoast_wpseo_focuskw', true);
+    $focus_args = array(
+      'post_type'      => get_post_type( $post_id ),
+			'posts_per_page' => $LIMIT,
 			'post_status'    => 'publish',
 			'post__not_in'   => array( $post_id ),
-			'orderby'        => $args['orderby'],
-			'tax_query'      => array()
-		);
+			'orderby'        => 'date',
+			'meta_key' => '_yoast_wpseo_focuskw',
+      'meta_value' => $focus_keyword
+    );
+    $focus_query = new WP_Query($focus_args);
+    if ($focus_query->have_posts()) {
+      while ($focus_query->the_posts()) {
+        array_push($matched_posts, $focus_query->the_posts());
+        $count++;
+      }
+      wp_reset_postdata();
+    }
+    $remainder = $remainder - $count;
+    if ($count >= $LIMIT)
+      return $matched_posts;
 
-		$post       = get_post( $post_id );
-		$taxonomies = get_object_taxonomies( $post, 'names' );
+    //tag matching
+    $tags = wp_get_post_tags($post_id);
+    $tag_args = array(
+      'post_type'      => get_post_type( $post_id ),
+			'posts_per_page' => $remainder,
+			'post_status'    => 'publish',
+			'post__not_in'   => array( $post_id ),
+			'orderby'        => 'date',
+			'tag' => $tags
+    );
+    $tag_query = new WP_Query($tag_args);
+    if ($tag_query->have_posts()) {
+      while ($tag_query->the_posts()) {
+        array_push($matched_posts, $tag_query->the_posts());
+        $count++;
+      }
+      wp_reset_postdata();
+    }
+    $remainder = $remainder - $count;
+    if ($remainder <= 0)
+      return $matched_posts;
 
-		foreach ( $taxonomies as $taxonomy ) {
-			$terms = get_the_terms( $post_id, $taxonomy );
-			if ( empty( $terms ) ) {
-				continue;
-			}
-			$term_list                   = wp_list_pluck( $terms, 'slug' );
-			$related_args['tax_query'][] = array(
-				'taxonomy' => $taxonomy,
-				'field'    => 'slug',
-				'terms'    => $term_list
-			);
-		}
+    //category matching
+    $cats = wp_get_post_categories($post_id);
+    $cat_args = array(
+      'post_type'      => get_post_type( $post_id ),
+			'posts_per_page' => $remainder,
+			'post_status'    => 'publish',
+			'post__not_in'   => array( $post_id ),
+			'orderby'        => 'date',
+			'category_name' => $cats
+    );
+    $cat_query = new WP_Query($cat_args);
+    if ($cat_query->have_posts()) {
+      while ($cat_query->the_posts()) {
+        array_push($matched_posts, $cat_query->the_posts());
+        $count++;
+      }
+      wp_reset_postdata();
+    }
 
-		if ( count( $related_args['tax_query'] ) > 1 ) {
-			$related_args['tax_query']['relation'] = 'OR';
-		}
-
-		if ( $args['return'] == 'query' ) {
-			return new WP_Query( $related_args );
-		} else {
-			return $related_args;
-		}
+    return $matched_posts;
 	}
+
 }

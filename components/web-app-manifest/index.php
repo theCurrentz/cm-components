@@ -1,8 +1,8 @@
 <?php
 function chroma_web_app_manifest() {
   if ( file_exists(plugin_dir_path( __FILE__ ) . 'manifest.json') && strlen(get_option('icon_url') > 5)) {
-    $manfiest = plugin_dir_url('chroma_wp_components') .
-  'chroma_wp_components/components/web-app-manifest/manifest.json';
+    $manfiest = plugin_dir_url('cm-components') .
+  'cm-components/components/web-app-manifest/manifest.json';
     $webAppName = get_bloginfo('name');
     $themeColor = get_option('theme_color');
     $icon = get_option('icon_url');

@@ -16,11 +16,25 @@ function getRandomInt(max) {
 }
 
 //quiz scene
-if(doesExist(document.querySelector('.cm-quiz-single'))) {
-  let gradientArray = ['#f0f,blue', '#ff512f, #dd2476', '#5433ff, #20bdff, #a5fecb', '#f79d00, #64f38c', '#396afc, #2948ff']
-  let choice = `linear-gradient(335deg,${gradientArray[getRandomInt(5)]})`
-  document.querySelector('.cm-quiz-single').style.background = choice
+const setScene = function() {
+  try {
+    let targetNode,
+    darken
+    if (doesExist(document.getElementsByClassName('cm-quiz-single')[0])) {
+      targetNode = document.getElementsByClassName('cm-quiz-single')[0]
+    }
+    else if (doesExist(document.getElementsByClassName('cm-quiz')[0])) {
+     targetNode = document.getElementsByClassName('cm-quiz')[0]
+     darken = 'linear-gradient(90deg, rgba(0,0,0, 0.56),rgba(0,0,0,0.56)),'
+    }
+    let gradientArray = ['#f0f,blue', '#ff512f, #dd2476', '#5433ff, #20bdff, #a5fecb', '#f79d00, #64f38c', '#396afc, #2948ff']
+    let choice = `${darken}linear-gradient(335deg,${gradientArray[getRandomInt(5)]})`
+    targetNode.style.background = choice
+  } catch (e) {
+      console.log(e.message)
+    }
 }
+setScene()
 
 //quiz app controller
 const quizAppCont= function(cmQuiz) {
@@ -158,16 +172,15 @@ const quizAppCont= function(cmQuiz) {
     var endExplanation = () =>  {
       this.questionTransition();
       //exp.classList.remove('is-active');
-      timer.remove()
+     // timer.remove()
     }
-
     //append explanation slide
     insertTime()
     var theTime = 1000
     var timer = document.createElement('DIV')
     timer.className = 'cm-quiz_timer-bar'
     timer.style.animationDuration = expTime + 'ms'
-    slides[currentIndex].append(timer)
+    slides[currentIndex].querySelector('.cm-quiz-slide-exp').append(timer)
     window.setTimeout(function() {
       endExplanation()
     }.bind(this), expTime)
@@ -225,8 +238,8 @@ const quizAppCont= function(cmQuiz) {
 
 }
 
-import fbInitializer from "/var/www/html/wp-content/plugins/chroma_wp_components/components/forms/signup/facebook-api-init.js"
-import chromaFormHandler from '/var/www/html/wp-content/plugins/chroma_wp_components/components/forms/signup/form-action.js'
+import fbInitializer from "/var/www/html/wp-content/plugins/cm-components/components/forms/signup/facebook-api-init.js"
+import chromaFormHandler from '/var/www/html/wp-content/plugins/cm-components/components/forms/signup/form-action.js'
 import cmEvent from './cm-analytics.js'
 function quizMain() {
   var cmQuiz = document.getElementById('cm-quiz')

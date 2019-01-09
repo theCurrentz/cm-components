@@ -28,7 +28,7 @@ function quiz_analytics() {
 
 //enqueue script and styles
 function enqueue_quiz_dash_scripts($hook) {
-  if ( 'toplevel_page_chroma_wp_components/components/quiz/inc/cm-quiz-analytics' != $hook )
+  if ( 'toplevel_page_cm-components/components/quiz/inc/cm-quiz-analytics' != $hook )
     return;
   if (is_admin()) {
     wp_enqueue_script( 'vue', 'https://cdn.jsdelivr.net/npm/vue/dist/vue.js', null, null, true );
