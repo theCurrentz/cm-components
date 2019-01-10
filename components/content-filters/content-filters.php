@@ -4,6 +4,8 @@ global $post;
 //filter for view as one page slider options
 function convert_multipage_post( $content ) {
   $content = str_replace('<!--nextpage-->', '', $content);
+  $content = preg_replace('/<p>\s*(<script.*>*.<\/script>)\s*<\/p>/iU', '\1', $content);
+  $content = preg_replace('/<p>\s*(/<!--(.|\s)*?-->/)\s*<\/p>/iU', '\1', $content);
   return $content;
 }
 
@@ -60,6 +62,7 @@ function chroma_custom_content_filter( $content ) {
     $content = str_replace('text-transform: uppercase;', '', $content);
     //remove these BS <p>&nbsp;</p>
     $content = str_replace('<p>&nbsp;</p>', '', $content);
+    $content = preg_replace('/<!--(.|\s)*?-->/', '', $content);
     $content = str_replace('<p></p>', '', $content);
 
     //find all name attributes and store

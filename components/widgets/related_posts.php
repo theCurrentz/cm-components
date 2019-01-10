@@ -153,7 +153,7 @@ class chroma_related_posts extends WP_Widget {
 			'post_status'    => 'publish',
 			'post__not_in'   => array( $post_id ),
 			'orderby'        => 'date',
-			'category_name' => $cats
+			'category_name' => explode($cats)
     );
     $cat_query = new WP_Query($cat_args);
     if ($cat_query->have_posts()) {
