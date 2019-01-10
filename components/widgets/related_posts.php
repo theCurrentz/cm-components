@@ -38,16 +38,16 @@ class chroma_related_posts extends WP_Widget {
 		$count = esc_attr($instance['count']) ? esc_attr($instance['count']) : 4;
 
 		$related = $this->chroma_get_related_posts( get_the_ID(), $count );
-		if( $related->have_posts() ) {
+		if( !empty($related) ) {
 			if(!empty($title)) {
 				echo $args['before_title'] . $title .$args['after_title'];
 			}
 			?>
 			<div class="side_list" id="related_content">
-				<?php while( $related->have_posts() ) { $related->the_post(); ?>
-					<a href="<?php the_permalink(); ?>" class="side_list__a">
-						<img class="side_list__img lazyload-img llreplace" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="<?php the_post_thumbnail_url('atl-tiny')?>"/>
-						<span class="side_list__title"><?php the_title(); ?></span>
+				<?php foreach( $related as $post ) { ?>
+					<a href="<?php the_permalink($post->ID); ?>" class="side_list__a">
+						<img class="side_list__img lazyload-img llreplace" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="<?php echo get_the_post_thumbnail_url($post->ID, 'atl-tiny'); ?>"/>
+						<span class="side_list__title"><?php echo $post->post_title; ?></span>
 					</a>
 			<?php } ?>
 		</div>
@@ -93,12 +93,25 @@ class chroma_related_posts extends WP_Widget {
 
 	//related posts query
 	function chroma_get_related_posts( $post_id, $related_count ) {
-
     //fields
+    global $wpdb;
     $LIMIT = $related_count;
     $remainder = $LIMIT;
     $count = 0;
     $matched_posts = array();
+
+    //retrieve possible duplicates
+    $postTitle = get_post($post_id)->post_title;
+    $dupes = $wpdb->get_results(
+      $wpdb->prepare("
+        SELECT ID
+        FROM {$wpdb->posts}
+        WHERE post_title = %s",
+        $postTitle
+      )
+    );
+    $dupes = array_map(function($e){ return($e = intval($e->ID)); }, $dupes );
+    array_push($dupes, $post_id);
 
     //focus keyword matching
     $focus_keyword = get_post_meta($post_id, '_yoast_wpseo_focuskw', true);
@@ -106,15 +119,17 @@ class chroma_related_posts extends WP_Widget {
       'post_type'      => get_post_type( $post_id ),
 			'posts_per_page' => $LIMIT,
 			'post_status'    => 'publish',
-			'post__not_in'   => array( $post_id ),
+			'post__not_in'   => $dupes,
 			'orderby'        => 'date',
 			'meta_key' => '_yoast_wpseo_focuskw',
       'meta_value' => $focus_keyword
     );
     $focus_query = new WP_Query($focus_args);
     if ($focus_query->have_posts()) {
-      while ($focus_query->the_posts()) {
-        array_push($matched_posts, $focus_query->the_posts());
+      $posts = $focus_query->posts;
+      foreach($posts as $post) {
+        array_push($matched_posts, $post);
+        array_push($dupes, $post->ID);
         $count++;
       }
       wp_reset_postdata();
@@ -124,19 +139,21 @@ class chroma_related_posts extends WP_Widget {
       return $matched_posts;
 
     //tag matching
-    $tags = wp_get_post_tags($post_id);
+    $tags = wp_get_post_tags($post_id, array('fields' => 'names'));
     $tag_args = array(
       'post_type'      => get_post_type( $post_id ),
 			'posts_per_page' => $remainder,
 			'post_status'    => 'publish',
-			'post__not_in'   => array( $post_id ),
+			'post__not_in'   => $dupes,
 			'orderby'        => 'date',
-			'tag' => $tags
+			'tag' => implode(',', $tags)
     );
     $tag_query = new WP_Query($tag_args);
     if ($tag_query->have_posts()) {
-      while ($tag_query->the_posts()) {
-        array_push($matched_posts, $tag_query->the_posts());
+      $posts = $tag_query->posts;
+      foreach($posts as $post) {
+        array_push($matched_posts, $post);
+        array_push($dupes, $post->ID);
         $count++;
       }
       wp_reset_postdata();
@@ -151,19 +168,20 @@ class chroma_related_posts extends WP_Widget {
       'post_type'      => get_post_type( $post_id ),
 			'posts_per_page' => $remainder,
 			'post_status'    => 'publish',
-			'post__not_in'   => array( $post_id ),
+			'post__not_in'   => $dupes,
 			'orderby'        => 'date',
-			'category_name' => $cats
+			'category_name' => implode(',', $cats)
     );
     $cat_query = new WP_Query($cat_args);
     if ($cat_query->have_posts()) {
-      while ($cat_query->the_posts()) {
-        array_push($matched_posts, $cat_query->the_posts());
+      $posts = $cat_query->posts;
+      foreach($posts as $post) {
+        array_push($matched_posts, $post);
+        array_push($dupes, $post->ID);
         $count++;
       }
       wp_reset_postdata();
     }
-
     return $matched_posts;
 	}
 
