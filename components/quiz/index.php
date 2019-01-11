@@ -13,7 +13,7 @@ add_action('wp_head', 'register_viewport');
 //reroute quiz template
 function chroma_quiz_template($single) {
     global $post;
-    if ( $post->post_type == 'chroma_quizzes' ) {
+    if ( $post->post_type == 'cm-quiz' ) {
         if ( file_exists( plugin_dir_path( __FILE__ ) . '/view/single-quiz.php' ) ) {
             return plugin_dir_path( __FILE__ ) .  '/view/single-quiz.php';
         }

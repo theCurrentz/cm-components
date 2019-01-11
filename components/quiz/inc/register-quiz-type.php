@@ -50,8 +50,9 @@ function chroma_quiz_type() {
 		'capability_type'       => 'post',
 		'show_in_rest'          => true,
 		'rest_base'             => 'cmquiz'
+
 	);
-	register_post_type( 'chroma_quizzes', $args );
+	register_post_type( 'cm-quiz', $args );
 
 }
 add_action( 'init', 'chroma_quiz_type', 0 );
