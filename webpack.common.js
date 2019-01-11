@@ -12,6 +12,7 @@ module.exports = {
         app: './src/index.js',
         errorcatcher: './components/error-reporting/js/error-catcher.js',
         quiz: './components/quiz/src/quiz-app.js',
+        form: './components/forms/master-form.js'
     },
     output: {
         filename: '[name].js',
