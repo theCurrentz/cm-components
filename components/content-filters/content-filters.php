@@ -11,8 +11,9 @@ function convert_multipage_post( $content ) {
 
 if (get_option('comments_button') == 'yes') {
   function add_comments_icon($content) {
+      global $post, $multipage, $page, $numpages;
       try {
-        if(empty($content) || (!is_single()) || ( get_post_type( get_the_ID() ) != 'post' ) || has_category('gallery'))
+        if(empty($content) || (!is_single()) || ( get_post_type( get_the_ID() ) != 'post' ) || has_category('gallery') || ($multipage && $page !== $numpages) )
           return $content;
         $content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
         $dom = new DOMDocument();

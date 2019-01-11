@@ -1,82 +1,72 @@
 'use strict'
-class fbComments {
+class commentCreater {
   //create component
-  createComments(targetsParent) => {
-    if (store.getState().commentStatus)
-      return;
-    store.dispatch({
-      type : 'commentOn'
-    })
-    var commentsTitle = document.createElement('span'),
-        commentsClose = document.createElement('button'),
-        disqus = document.createElement('div'),
-        body = document.getElementsByTagName('body')[0]
-    disqus.id = 'disqus_thread'
-    comments = document.createElement('div')
-    comments.classList.add('comments-area')
-    comments_overlay = document.createElement('div')
-    comments_overlay.classList.add('comments_overlay')
-    commentsTitle.classList.add('comments_title')
-    commentsClose.setAttribute('class', 'comments_close box-shadow-default')
-    commentsTitle.innerHTML = 'Comments'
-    commentsTitle.appendChild(commentsClose)
-    comments.appendChild(commentsTitle)
-    comments.appendChild(disqus)
-    comments.id = "comments"
-    comments.setAttribute('name', 'comments')
-    body.appendChild(comments_overlay)
-    body.appendChild(comments)
-    //create disqus script
-    this.disqus()
-    //comment close listeners
-    commentsClose.addEventListener('click', (ev) => {
-      comments.classList.toggle('is-active')
-      comments_overlay.classList.toggle('is-active')
-    })
-    comments_overlay.addEventListener('click', (ev) => {
-      comments.classList.toggle('is-active')
-      comments_overlay.classList.toggle('is-active')
-    })
+  constructor() {
+    this.flag = true
+    this.body = document.getElementsByTagName('body')[0]
+    this.comments = document.getElementById('comments')
+    this.commentsOverlay = document.getElementsByClassName('comments_overlay')[0]
+    this.commentsClose = document.getElementsByClassName('comments_close')[0]
+    this.commentsInner = document.getElementById('commments-in')
+    this.page = (doesExist(document.querySelector('meta[property="og:url"]')))
+      ? document.querySelector('meta[property="og:url"]').getAttribute('content')
+      : window.location
   }
+  create(targetsParent) {
+    if(this.flag) {
+      this.flag = false
+      if(doesExist(document.querySelector('.fb-comments'))) {
+        let fbComments = document.querySelector('.fb-comments'),
+            fbroot = document.createElement('div'),
+            fbi = document.createElement('script')
 
-  fb() {
-    //disqus data is set up seperately via localize script
-    let disqus_shortname = 'idropnews'
-    if (!disqus_loaded)  {
-      disqus_loaded = true
-      var e = document.createElement("script")
-      e.type = "text/javascript"
-      e.async = true
-      e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
-      (document.getElementsByTagName("head")[0] ||
-      document.getElementsByTagName("body")[0])
-      .appendChild(e);
+        fbComments.setAttribute('data-href', this.page)
+        fbComments.setAttribute('data-width', '100%')
+        fbComments.setAttribute('data-numposts', '20')
+
+        fbroot.id = 'fb-root'
+        fbi.src = `https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=${chromaApp.fbAppID}&version=v2.0&autoLogAppEvents=1`
+
+        document.body.appendChild(fbroot)
+        document.body.appendChild(fbi)
+      }
+      //comment close listeners
+      this.commentsClose.addEventListener('click', (ev) => {
+        this.comments.classList.toggle('is-active')
+        this.commentsOverlay.classList.toggle('is-active')
+      })
+      this.commentsOverlay.addEventListener('click', (ev) => {
+        this.comments.classList.toggle('is-active')
+        this.commentsOverlay.classList.toggle('is-active')
+      })
     }
+    //toggle active
+    this.comments.classList.toggle('is-active')
+    this.commentsOverlay.classList.toggle('is-active')
   }
 
   //comment button listener
-  static commentTrigger() {
-    var commentTriggers = document.querySelectorAll('.comments-icon, #comments-anchor');
+  commentTrigger() {
+    const commentTriggers = document.querySelectorAll('.comments-icon');
     if (doesExist(commentTriggers)) {
       [].forEach.call(commentTriggers, (e) => {
         //reposition comment icon if awkward
         if (e.id != 'comments-anchor') {
           if (e.nextSibling != null && e.nextSibling.nodeName != 'P')
             e.classList.add('expand')
-          else if(e.parentNode.id !== 'content-main') {
+          else if( !e.parentNode.classList.contains('entry-content')) {
             e.classList.add('expand')
-            document.getElementById('content-main').appendChild(e)
+            document.querySelector('.entry-content').appendChild(e)
           }
         }
         e.addEventListener('click', (ev) => {
           ev.preventDefault()
-          this.createCommentComponent(ev.target.parentNode)
-          if (comments != null) {
-            comments.classList.toggle('is-active')
-            comments_overlay.classList.toggle('is-active')
-          }
+          this.create()
         })
       })
     }
   }
 }
+
+const theComments = new commentCreater()
+theComments.commentTrigger()
