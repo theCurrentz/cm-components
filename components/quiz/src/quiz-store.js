@@ -1,8 +1,15 @@
+import merge from 'lodash/merge'
+
 //init state
 export var initState = {
   questions: {
   },
-  count: 1
+  count: 1,
+  currentSlide: 0,
+  previousSlide: 0,
+  nextSlide: 0,
+  slideLength: document.getElementsByClassName('cm-quiz-slide').length,
+  currentProgress: 0
 }
 //store
 export var cmQuizStore = Redux.createStore(questionTracker, initState)
@@ -28,19 +35,7 @@ export function questionTracker(currentState = initState, action) {
       })
       return nextState
       break;
-    case 'count':
-      nextState = currentState.count + action.count
-      return nextState
-      break;
     default:
       return currentState
   }
 }
-//action handlers
-// [].forEach.call(document.querySelectorAll('button[data-share="comment"]'), (e) => {
-//   e.addEventListener('click', (ev) => {
-//     cmQuizStore.dispatch({
-//       type : 'commentOn'
-//     })
-//   })
-// })

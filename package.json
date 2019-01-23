@@ -54,10 +54,13 @@
         "not ie <= 8"
     ],
     "dependencies": {
+        "lodash": "^4.17.11",
         "node-fetch": "^2.3.0",
         "npm": "^6.5.0",
         "promise-polyfill": "8.1.0",
         "uglifyjs-webpack-plugin": "^2.1.1",
+        "vue": "^2.5.22",
+        "vuex": "^3.0.1",
         "whatwg-fetch": "^2.0.4"
     }
 }

@@ -3,13 +3,13 @@ abstract class meta_box_featured_img_toggle {
 
   public static function add_box() {
     add_meta_box(
-  		'chromma-featured-image',			// Unique ID
-  		esc_html__( 'Featured Image Settings', 'chroma-text' ),		// Title
-  		'meta_box_featured_img_toggle::display_box',		// Callback function
-  		'post',					// Admin page (or post type)
-  		'side',					// Context
-  		'core'					// Priority
-  	);
+      'chromma-featured-image',// Unique ID
+      esc_html__( 'Featured Image Settings', 'chroma-text' ),// Title
+      'meta_box_featured_img_toggle::display_box',// Callback function
+      array('post', 'cm-quiz'),// Admin page (or post type)
+      'side',// Context
+      'core'// Priority
+    );
   }
 
   // Display the post meta box for ads toggling

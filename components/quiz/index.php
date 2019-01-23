@@ -5,7 +5,7 @@ if (get_option('enable_quizzes') == 'yes') {
 }
 function register_viewport() {
   global $post;
-  if ( $post->post_type == 'chroma_quizzes' )
+  if ( $post->post_type == 'cm-quiz' )
     echo '<meta name="viewport" content="width=device-width,initial-scale=1.0">';
 }
 add_action('wp_head', 'register_viewport');

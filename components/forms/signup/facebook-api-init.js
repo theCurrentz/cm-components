@@ -1,4 +1,3 @@
-
 const fbInitializer = function() {
   window.fbAsyncInit = function() {
     FB.init({
@@ -38,4 +37,3 @@ const fbInitializer = function() {
     }
 }
 export default fbInitializer;
-//const fbApiInit = new fbInitializer()

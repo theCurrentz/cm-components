@@ -38,7 +38,7 @@ function enqueue_quiz_dash_scripts($hook) {
     wp_enqueue_style('vue-icons', 'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons');
     // WP_Query arguments
     $args = array(
-    	'post_type'              => array( 'chroma_quizzes' ),
+    	'post_type'              => array( 'cm-quiz' ),
     	'post_status'            => array( 'published' ),
     );
     // The Query

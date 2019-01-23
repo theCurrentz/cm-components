@@ -10,7 +10,11 @@ $ai_wp_data [AI_WP_DEBUGGING] |= AI_DEBUG_NO_INSERTION;
          $cssTime = filemtime( plugin_dir_path( __DIR__ ) .'src/style.sass' );
         echo '<link rel="stylesheet" href="'.plugin_dir_url("cm-components") . 'cm-components/dist/cmquiz.css?'.$cssTime.'" type="text/css" media="all"/>';
       ?>
-      <div class="cm-quiz-title-bar"><div class="cm-quiz-title"><?php the_title() ?></div><div class="cm-quiz-prog" id="cm-quiz-prog">0</div></div>
+      <div class="cm-quiz-title-bar">
+        <div class="cm-quiz-title"><?php the_title() ?></div>
+        <div class="cm-quiz-prog" id="cm-quiz-prog">0</div>
+        <div class="cm-quiz_timer"></div>
+      </div>
       <div class="cm-quiz-box">
           <?php the_content(); ?>
         <div class="cm-quiz-prompt">
@@ -24,23 +28,25 @@ $ai_wp_data [AI_WP_DEBUGGING] |= AI_DEBUG_NO_INSERTION;
         <div class="cm-quiz-results" data-slide="slide-z">
           Results:
         </div>
-        <div class="cm-quiz_timer"></div>
-        <div id="cm-quiz-back" class="cm-quiz_nav-b">
-          <div class="cm-quiz_nav-b-a cm-quiz_nav-b-a-b">
-          </div>
         </div>
-        <div id="cm-quiz-fwd" class="cm-quiz_nav-f">
-          <div class="cm-quiz_nav-f-a cm-quiz_nav-f-a-f">
+        <div class="cm-quiz_nav">
+          <div id="cm-quiz-back" class="cm-quiz_nav-b">
+            <div class="cm-quiz_nav-b-a cm-quiz_nav-b-a-b">
+            </div>
+            <span>Back</span>
           </div>
-        </div>
+          <div id="cm-quiz-fwd" class="cm-quiz_nav-f">
+            <span>Next</span>
+            <div class="cm-quiz_nav-f-a cm-quiz_nav-f-a-f">
+            </div>
+          </div>
         </div>
         <?php $quizSocialShare = new social_share_component(
           array(
             'setFacebook' => true,
-            'setTwitter' => true,
+            'setFBMessenger' => true,
             'setEmail' => true,
-            'setDots' => true,
-            'moreBox' => true,
+            'setCopyLink' => true,
             'classList' => 'cm-quiz-share'
           )
         );
