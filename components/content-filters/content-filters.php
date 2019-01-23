@@ -34,7 +34,11 @@ if (get_option('comments_button') == 'yes') {
         if ($ps->length < 2) {
           return $content;
         }
-        $targetP = $ps[($ps->length) - 2];
+        if ($ps->length == 2) {
+          $targetP = $ps[($ps->length) - 1];
+        } else {
+          $targetP = $ps[($ps->length) - 2];
+        }
         $targetP->parentNode->insertBefore($comment, $targetP);
         $content = preg_replace('/^<!DOCTYPE.+?>/', '', str_replace( array('<html>', '</html>', '<body>', '</body>'), array('', '', '', ''), $dom->saveHTML()));
         return $content;
