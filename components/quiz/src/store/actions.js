@@ -10,9 +10,13 @@ export function addQuestion(index, question, answer, correct) {
     }
   }
 }
-export function countSlide(count) {
+
+export function slideSettings(currentSlide, previousSlide, nextSlide, currentProgress) {
   return {
-    type: 'count',
-    visibleSlide: count + 1
+    type: 'slideSettings',
+    currentSlide: 0,
+    previousSlide: 0,
+    nextSlide: 0,
+    currentProgress: 0
   }
 }

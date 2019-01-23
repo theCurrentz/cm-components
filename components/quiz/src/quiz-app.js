@@ -1,12 +1,16 @@
 'use strict'
 import './style.sass'
 import { createStore } from 'redux';
-import {addQuestion, countSlide} from './store/actions'
-import './quiz-store.js'
+import {addQuestion} from './store/actions'
 import {initState, cmQuizStore, render, questionTracker} from './quiz-store.js'
+import fbInitializer from "/var/www/html/wp-content/plugins/cm-components/components/forms/signup/facebook-api-init.js"
+import chromaFormHandler from '/var/www/html/wp-content/plugins/cm-components/components/forms/signup/form-action.js'
+import cmEvent from './cm-analytics.js'
 cmQuizStore.subscribe(render)
 
-//utilities
+/**
+ * Utility Functions
+ */
 function doesExist(el) {
   if (el !== null && typeof el !== 'undefined')
     return true
@@ -15,8 +19,10 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
-//quiz scene
-const setScene = function() {
+/**
+ * Set Scene
+ */
+(function() {
   try {
     let targetNode,
     darken = ''
@@ -27,55 +33,168 @@ const setScene = function() {
      darken = 'linear-gradient(90deg, rgba(0,0,0, 0.56),rgba(0,0,0,0.56)),'
     }
     let gradientArray = ['#f0f,blue', '#ff512f, #dd2476', '#5433ff, #20bdff, #a5fecb', '#f79d00, #64f38c', '#396afc, #2948ff']
-    let choice = `${darken}linear-gradient(335deg,${gradientArray[getRandomInt(5)]})`
+    let randomSelect = gradientArray[getRandomInt(5)]
+    let choice = `${darken}linear-gradient(335deg,${randomSelect})`
+    let primaryColor = randomSelect.split(',')[1]
     targetNode.style.background = choice
-    console.log(choice)
+   document.getElementById('cm-quiz').style.setProperty("--main-color", primaryColor)
   } catch (e) {
       console.log(e.message)
     }
-}
-setScene()
+})()
 
 //quiz app controller
-const quizAppCont= function(cmQuiz) {
+const quizAppCont = function(cmQuiz) {
   if ( !(document.getElementsByClassName('cm-quiz-slide').length > 0))
     return
-  var quizID = cmQuiz.getAttribute('data-id'),
-      quizBox = document.getElementsByClassName('cm-quiz-box')[0],
-      slides = document.getElementsByClassName('cm-quiz-slide'),
-      backButton = document.getElementById('cm-quiz-back'),
-      fwdButton = document.getElementById('cm-quiz-fwd'),
-      progression = document.getElementById('cm-quiz-prog'),
-      slideAmount = slides.length,
-      qWeight = Math.round(100 / slideAmount),
-      currentIndex = 0,
-      totalScore = 0,
-      scale = {a: 0, b:1, c:2, d:3}
+  /**
+  * Nodes and Fields
+  */
+  const
+    quizID = cmQuiz.getAttribute('data-id'),
+    quizBox = document.getElementsByClassName('cm-quiz-box')[0],
+    slides = document.getElementsByClassName('cm-quiz-slide'),
+    slideAmount = slides.length,
+    progression = document.getElementById('cm-quiz-prog'),
+    theTime = document.getElementsByClassName('cm-quiz_timer')[0],
+    qWeight = Math.round(100 / slideAmount),
+    scale = {a: 0, b:1, c:2, d:3}
+  var
+    currentIndex = 0,
+    totalScore = 0,
+    explanationSkipped = false,
+    currentNode = document.getElementsByClassName('cm-quiz-slide')[0],
+    prevNode = null,
+    nextNode = document.getElementsByClassName('cm-quiz-slide')[1],
+    backFlag = false,
+    fwdFlag = false,
+    backButton = document.getElementById('cm-quiz-back'),
+    fwdButton = document.getElementById('cm-quiz-fwd')
+  /**
+  * Quiz App Initializr
+  */
   this.Init = () => {
+    Array.prototype.forEach.call(slides, (slide, i, list) => {
+      slide.setAttribute('data-key', i)
+      slide.setAttribute('data-answered', 'false')
+      //lock slides
+      if (i != 0)
+        slide.setAttribute('data-locked', 'true')
+      else
+        slide.setAttribute('data-locked', 'false')
+    })
     progression.innerHTML = currentIndex + ' / ' + slideAmount
-    this.watchSlide(currentIndex);
+    watchSlide(currentIndex);
     //fire impressions/view event
     cmEvent('Views', quizID)
   }
-  this.watchSlide = () => {
-    if (currentIndex >= (slideAmount)) {
-    } else {
-      this.questionHandler()
-    }
+
+  /**
+  * Watch Slide
+  */
+  const watchSlide = () => {
+    if (
+          currentIndex < slideAmount
+          && currentNode.getAttribute('data-answered') == 'false' 
+        )
+      questionHandler()
   }
-  this.questionTransition = () => {
-    slides[currentIndex].style.transform = 'translateX(-100%)'
-    currentIndex++
+
+    //Back button listener & control
+    function backControl() {
+      backButton.addEventListener('click', (ev) => {
+        if (backFlag === true) {
+          explanationSkipped = true
+          updateNavNodes('back')
+        }
+      })
+    } backControl()
+
+    //Next button listener & control
+    function fwdControl() {
+      fwdButton.addEventListener('click', (ev) => {
+        if (fwdFlag === true) {
+            explanationSkipped = true
+            updateNavNodes('forward')
+          }
+      })
+    } fwdControl()
+  
+    /**
+     * updateNavNodes - determines navigation node tree of slides, recalculates positioning, triggers sequencing
+     * @param {string} type 
+     */
+  function updateNavNodes(type) {
+    //cleanup and resetting
+    headerController.removeTheTime()
     progression.innerHTML = currentIndex + ' / ' + slideAmount
-    var nextSlide = slides[currentIndex]
-    if (currentIndex >= (slideAmount)) {
-      this.endQuizSequence()
+    //determine new arrangement of nodes
+    if (type == 'forward' || type=='timer' && doesExist(nextNode) && nextNode.getAttribute('data-locked') == 'false') {
+      currentIndex++
+      prevNode = currentNode
+      currentNode = (doesExist(currentNode.nextElementSibling)) ? currentNode.nextElementSibling : null
+      nextNode = (doesExist(currentNode.nextElementSibling)) ? currentNode.nextElementSibling : null
+      fwdButton.focus()
+    } else if (type == 'back' && doesExist(prevNode)) {
+      console.log("what???")
+      currentIndex--
+      nextNode = currentNode
+      currentNode = (doesExist(currentNode.previousElementSibling)) ? currentNode.previousElementSibling : null
+      prevNode = (doesExist(currentNode) && doesExist(currentNode.previousElementSibling)) ? currentNode.previousElementSibling : null
+    }
+    if(doesExist(currentNode))
+      console.log(`%c Current ${currentNode.getAttribute('data-key')}`, 'color: green')
+    if(doesExist(prevNode))
+      console.log(`%c Prev ${prevNode.getAttribute('data-key')}`, 'color: green')
+    if(doesExist(nextNode))
+      console.log(`%c Next ${nextNode.getAttribute('data-key')}`, 'color: green')
+
+
+    //if the next node is not locked, activate forwards
+    if (doesExist(nextNode) && nextNode.getAttribute('data-locked') == 'false') {
+      fwdFlag = true
+      fwdButton.classList.add('is-active')
     } else {
-      nextSlide.classList.add('is-active')
-      this.watchSlide()
+      fwdFlag = false
+      fwdButton.classList.remove('is-active')
+    }
+    //
+    if (doesExist(prevNode)) {
+      backFlag = true
+      backButton.classList.add('is-active')
+    } else {
+      backFlag = false
+      backButton.classList.remove('is-active')
+    }
+   
+    //extend to manage reflow of active node visibly and
+    function reflow() {
+      //reset and set position of current slide
+      function resetAndSetPosition(element, newPosition) {
+        if(doesExist(element)) {
+          element.classList.remove('translate-pos-100')
+          element.classList.remove('translate-neg-100')
+          element.classList.remove('is-active')
+          element.classList.add(newPosition)
+        }
+      }
+      resetAndSetPosition(prevNode, 'translate-neg-100')
+      resetAndSetPosition(currentNode, 'is-active')
+      resetAndSetPosition(nextNode, 'translate-pos-100')
+    } reflow()
+
+     //handle either ending sequence or activate the slide watcher
+     if (currentIndex >= (slideAmount)) {
+      endQuizSequence()
+    } else {
+      watchSlide()
     }
   }
-  this.endQuizSequence = () => {
+
+  /**
+  * End Quiz Sequence
+  */
+  const endQuizSequence = () => {
     //fire quiz completed
     cmEvent('completed', quizID)
     var haveEmail = false
@@ -86,6 +205,152 @@ const quizAppCont= function(cmQuiz) {
       this.generateResults()
     }
   }
+
+  /**
+  * Handler for Question & Answer Control
+  */
+  const questionHandler = () => {
+    const currentSlide = slides[currentIndex],
+         answers = currentSlide.querySelectorAll('.cm-quiz-slide-ans li')
+    var answerChosen = false;
+    [].forEach.call(answers, (e) => {
+      e.addEventListener('click', (ev) => {
+        if (answerChosen === false) {
+          //fire question info event
+          cmEvent('question', quizID, [currentSlide.querySelector('.cm-quiz-slide-q').innerHTML, e.innerHTML])
+          feedBack(e, ev)
+          answerChosen = true
+          currentNode.setAttribute('data-answered', 'true')
+          nextNode.setAttribute('data-locked', 'false')
+          fwdButton.classList.add('is-active')
+          fwdFlag = true
+        }
+      })
+    })
+    const feedBack = (e, ev) => {
+      //remove listener as soon as clicked to prevent multiple clicks
+      [].forEach.call(answers, (el) => {el.removeEventListener('click',feedBack)})
+      //calc score
+      if (Array.prototype.indexOf.call(answers, e) === scale[currentSlide.getAttribute('data-correct')]) {
+        totalScore += qWeight
+        let scoreShout = document.createElement('div')
+          scoreShout.className = 'cm-quiz-shout'
+          scoreShout.innerHTML = '+' + qWeight + ' Points!'
+        answers[0].parentNode.style.display = 'none'
+        cmQuiz.appendChild(scoreShout)
+        setTimeout(function() { scoreShout.remove() }, 2400)
+      }
+      //display correct/incorrect
+      let correct = Array.prototype.filter.call(answers, e2 => Array.prototype.indexOf.call(answers, e2) === scale[currentSlide.getAttribute('data-correct')])[0];
+      let incorrect = Array.prototype.filter.call(answers, e2 => e2 !== correct);
+      correct.classList.add('correct')
+
+      correct.setAttribute('data-correct', 'correct');
+      [].forEach.call(incorrect, i => {
+        i.classList.add('incorrect')
+        i.setAttribute('data-correct', 'incorrect')
+      })
+      //fire question answered event
+      cmQuizStore.dispatch(addQuestion(currentIndex,currentSlide.querySelector('.cm-quiz-slide-q').innerHTML, e.innerHTML, e.getAttribute('data-correct')))
+      cmEvent('answered', quizID)
+      //display explanation transition
+      explanationHandler(correct.innerHTML)
+    }
+  }
+
+  /* *
+  *  Explanation Handler
+  */
+  const explanationHandler = function(correctAnswerText) {
+    //nodes & fields
+    const
+      exp = slides[currentIndex].querySelector('.cm-quiz-slide-exp'),
+      expContent = exp.querySelector('.cm-quiz-slide-exp-s'),
+      correctTitle = document.createElement('div')
+
+    //display an ad on explanation pages
+    displayAd(exp)
+
+    //display correct answer
+    correctTitle.classList = 'cm-quiz-slide-exp-correct'
+    correctTitle.innerHTML = `Correct Answer: ${correctAnswerText}`
+    exp.insertBefore(correctTitle, expContent)
+    exp.classList.add('is-active')
+
+    //determine length of time to allot for interstial slide
+    const expTime = ((exp.innerText.split(' ').length) / 260 ) * 60 * 1000
+    var expTimeSeconds = Math.round(expTime/1000)
+
+    //Execute Timer Manager
+     timeManager(exp, expTime, expTimeSeconds)
+  }
+
+  const headerController = {
+    addTheTime() {
+      theTime.classList.add('is-active')
+      progression.style.display = 'none'
+    },
+    removeTheTime() {
+      theTime.classList.remove('is-active')
+      progression.style.display = 'flex'
+    }
+  }
+
+  /**
+   *  Time Manager
+   *     Inserts and destroys {time sweep effect, timer countdown}
+   *     Deactivatess the exp (explanation of current slide)
+   * @param {node} exp
+   * @param {double} expTime
+   * @param {double} expTimeSeconds
+   */
+  const timeManager = (exp, expTime, expTimeSeconds) => {
+    var
+      timerSweepFlag = true,
+      timer
+    explanationSkipped = false
+
+    //append timer
+    //setup
+      headerController.addTheTime()
+      const insertTime = function() {
+        //visual timer sweep
+        if (timerSweepFlag == true) {
+          timerSweepFlag = false
+
+          var timer = document.createElement('DIV')
+            timer.className = 'cm-quiz_timer-bar'
+            timer.style.animationDuration = expTime + 'ms'
+              exp.append(timer)
+
+          //remove the timer sweep
+          setTimeout(function() {
+              timer.remove()
+          }, expTime)
+        }
+
+        //manage timer
+        if (expTimeSeconds <= 0) {
+          updateNavNodes('timer')
+          headerController.removeTheTime()
+          return
+        } else if (explanationSkipped) {
+           clearTimeout(insertTime)
+           return
+        } else {
+          theTime.innerHTML = expTimeSeconds
+          expTimeSeconds--
+          setTimeout(insertTime, 1000)
+        }
+      }
+      //reset explanation skipped
+      explanationSkipped = false
+      insertTime()
+  }
+
+  /**
+  * Generate Score Results for user
+  */
   this.generateResults = () => {
     //fire subscribed event
     cmEvent('subscribed', quizID)
@@ -99,148 +364,35 @@ const quizAppCont= function(cmQuiz) {
     resultsUL.innerHTML = resultsList
     results.innerHTML = `<span class='cm-quiz_finalscore'>Score: ${totalScore}%</span><span class='cm-quiz_share-cta'>Share your score!</span>`
     results.appendChild(resultsUL)
+    results.classList.remove('translate-pos-100')
     results.classList.add('is-active')
   }
-  this.questionHandler = () => {
-    var currentSlide = slides[currentIndex],
-         answers = currentSlide.querySelectorAll('.cm-quiz-slide-ans li'),
-         answerChosen = false;
-    [].forEach.call(answers, (e) => {
-      e.addEventListener('click', (ev) => {
-        if (answerChosen === false) {
-          //fire question info event
-          cmEvent('question', quizID, [currentSlide.querySelector('.cm-quiz-slide-q').innerHTML, e.innerHTML])
-          feedBack(e, ev)
-          answerChosen = true
-        }
-      })
-    })
-    var feedBack = (e, ev) => {
-      //remove listener as soon as clicked to prevent multiple clicks
-      [].forEach.call(answers, (el) => {el.removeEventListener('click',feedBack)})
-      //calc score
-      if (Array.prototype.indexOf.call(answers, e)  === scale[currentSlide.getAttribute('data-correct')]) {
-        totalScore += qWeight
-        let scoreShout = document.createElement('div')
-          scoreShout.className = 'cm-quiz-shout'
-          scoreShout.innerHTML = '+' + qWeight + ' Points!'
-        cmQuiz.appendChild(scoreShout)
-        setTimeout(function() { scoreShout.remove() }, 2000)
-      }
-      //display correct/incorrect
-      let correct = Array.prototype.filter.call(answers, e2 => Array.prototype.indexOf.call(answers, e2) === scale[currentSlide.getAttribute('data-correct')])[0];
-      let incorrect = Array.prototype.filter.call(answers, e2 => e2 !== correct);
-      correct.classList.add('correct')
-      correct.setAttribute('data-correct', 'correct');
-      [].forEach.call(incorrect, i => {
-        i.classList.add('incorrect')
-        i.setAttribute('data-correct', 'incorrect')
-      })
-      //fire question answered event
-      cmQuizStore.dispatch(addQuestion(currentIndex,currentSlide.querySelector('.cm-quiz-slide-q').innerHTML, e.innerHTML, e.getAttribute('data-correct')))
-      cmEvent('answered', quizID)
-      //display explanation transition
-      this.explanationHandler()
-    }
-  }
-  this.explanationHandler = () => {
-    var exp = slides[currentIndex].querySelector('.cm-quiz-slide-exp')
-      exp.classList.add('is-active')
-    //display an ad on explanation pages
-    //determine length of time to allot for interstistial slide
-    var expTime = ((exp.innerText.split(' ').length) / 213 ) * 60 * 1000
-    //construct explanation slide
-    var expTimeS = Math.round(expTime/1000)
-    this.displayAd(exp)
-    //append timer
-    var insertTime = () =>  {
-      document.getElementsByClassName('cm-quiz_timer')[0].classList.add('is-active')
-      if (expTimeS <= 0 ) {
-        document.getElementsByClassName('cm-quiz_timer')[0].classList.remove('is-active')
-        clearTimeout(insertTime)
-        return
-      }
-      else {
-        //manage timer
-        var theTime = document.getElementsByClassName('cm-quiz_timer')[0]
-        theTime.innerHTML = expTimeS
-        expTimeS--
-        setTimeout(insertTime, 1000)
-      }
-    }
-    //end the exp
-    var endExplanation = () =>  {
-      this.questionTransition();
-      //exp.classList.remove('is-active');
-     // timer.remove()
-    }
-    //append explanation slide
-    insertTime()
-    var theTime = 1000
-    var timer = document.createElement('DIV')
-    timer.className = 'cm-quiz_timer-bar'
-    timer.style.animationDuration = expTime + 'ms'
-    slides[currentIndex].querySelector('.cm-quiz-slide-exp').append(timer)
-    window.setTimeout(function() {
-      endExplanation()
-    }.bind(this), expTime)
-  }
-  this.displayAd = (currExp) => {
-    let newAd = document.createElement('div'),
-        newAdIns = document.createElement('ins')
-    newAd.classList = 'cm-quiz_ad'
-    newAdIns.classList = 'adsbygoogle'
-    newAdIns.setAttribute('style', 'display:block')
-    newAdIns.setAttribute('data-ad-client', 'ca-pub-4229549892174356')
-    newAdIns.setAttribute('data-ad-slot', '5741416818')
-    newAdIns.setAttribute('data-ad-format', 'horizontal')
+
+  /**
+   * Create and Display Google Adsense Unit
+   */
+  const displayAd = (currExp) => {
+    const newAd = document.createElement('div')
+      newAd.classList = 'cm-quiz_ad'
+    const newAdIns = document.createElement('ins')
+      newAdIns.classList = 'adsbygoogle'
+      newAdIns.setAttribute('style', 'display:block')
+      newAdIns.setAttribute('data-ad-client', 'ca-pub-4229549892174356')
+      newAdIns.setAttribute('data-ad-slot', '5741416818')
+      newAdIns.setAttribute('data-ad-format', 'horizontal')
     newAd.appendChild(newAdIns)
     currExp.insertBefore(newAd, currExp.children[0]);
+    //push ad
     (adsbygoogle = window.adsbygoogle || []).onload = function () {
       adsbygoogle.push({})
     }
   }
-  //back button
-  this.quizNav = () => {
-    var navFlag = null,
-      current = slides[currentIndex]
-    //BACK LOGIC
-    backButton.addEventListener('click', (ev) => {
-      if  (navFlag === 'back')
-        current = current.previousElementSibling
-      else
-        current = slides[currentIndex]
-      if (doesExist(current.previousElementSibling)) {
-        current.classList.remove('is-active')
-        current.previousElementSibling.style.transform = 'translateX(0px)'
-        current.previousElementSibling.classList.add('is-active')
-        navFlag = 'back'
-        fwdButton.classList.add('is-active')
-        console.log(current)
-      }
-    })
-    //FORWARDS LOGIC
-    fwdButton.addEventListener('click', (ev) => {
-      if  (navFlag === 'fwd')
-        current = current.nextElementSibling
-      else
-        current = slides[currentIndex]
-      if (doesExist(current.nextElementSibling)) {
-        current.classList.remove('is-active')
-        current.nextElementSibling.style.transform = 'translateX(0px)'
-        current.nextElementSibling.classList.add('is-active')
-        navFlag = 'fwd'
-        console.log(current)
-      }
-    })
-  }
-  this.quizNav()
 
-}
+} // End App
 
-import fbInitializer from "/var/www/html/wp-content/plugins/cm-components/components/forms/signup/facebook-api-init.js"
-import chromaFormHandler from '/var/www/html/wp-content/plugins/cm-components/components/forms/signup/form-action.js'
-import cmEvent from './cm-analytics.js'
+/*
+* Run App
+*/
 function quizMain() {
   var cmQuiz = document.getElementById('cm-quiz')
   if (!doesExist(cmQuiz))
@@ -248,8 +400,7 @@ function quizMain() {
   //init quiz
   const quizApp = new quizAppCont(cmQuiz)
   quizApp.Init()
-  //init fb api and form
-  const fbApiInit = new fbInitializer()
+  //init form
   const formProceszr = new chromaFormHandler(quizApp.generateResults)
   formProceszr.init()
 } quizMain()

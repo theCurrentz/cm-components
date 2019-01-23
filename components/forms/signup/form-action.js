@@ -1,3 +1,6 @@
+import fbInitializer from "/var/www/html/wp-content/plugins/cm-components/components/forms/signup/facebook-api-init.js"
+const fbApiInit = new fbInitializer()
+
 function chromaFormHandler (callBack = null) {
   //data
   var postURL = location.protocol + '//' + window.location.hostname + '/wp-json/chroma/form-processer/',
@@ -22,7 +25,6 @@ function chromaFormHandler (callBack = null) {
   }
 
   this.facebookSignup = (el) => {
-    console.log(el)
     FB.api("/me", "GET", {
       fields: "id,name,email"
     },
@@ -109,5 +111,3 @@ function chromaFormHandler (callBack = null) {
   }
 }
 export default chromaFormHandler;
-// const formProceszr = new chromaFormHandler()
-// formProceszr.init()
