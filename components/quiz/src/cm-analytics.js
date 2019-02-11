@@ -1,5 +1,5 @@
 const cmEvent = function(name = '', postID = '', value = '') {
-  if (name === null)
+  if (name === null || name === '')
     return
   var dataBody = (Array.isArray(value))
     ? {

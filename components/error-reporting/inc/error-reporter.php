@@ -1,8 +1,5 @@
 <?php
 require(dirname(dirname(dirname(dirname(dirname(dirname(__DIR__)))))) . '/wp-config.php');
-//use php mailer namespace and exceptions
-// use PHPMailer\PHPMailer\PHPMailer;
-// use PHPMailer\PHPMailer\Exception;
 
 //Load Composer's autoloader
 require(dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php');

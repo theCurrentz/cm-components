@@ -99,8 +99,52 @@ remove_action( 'try_gutenberg_panel', 'wp_try_gutenberg_panel' );
 
 function helloMessage() {
 	$user = wp_get_current_user();
-	echo "<h1 style='padding: 12px 4%;font-size: 2rem;font-weight: 800;line-height: 1.35;'>Hello ".$user->display_name."</h1><br />";
+	echo "<h1 style='font-size: 2rem;font-weight: 800;line-height: 1.35;'>Hello ".$user->display_name."</h1>";
+  if(is_admin()) {
+    chroma_get_client_errors();
+  }
 }
 add_action( 'welcome_panel', 'helloMessage' );
+function chroma_get_client_errors() {
+  echo "<h3>Today's Client Side Errors:</h3>";
+  try {
+    //initialize server sql connection variables
+    $servername = DB_HOST;
+    $username = DB_USER;
+    $password = DB_PASSWORD;
+    $db_name = DB_NAME;
+
+    $conn = new mysqli($servername, $username, $password, $db_name);
+    // Check connection
+    if ($conn->connect_error)
+      die("Connection failed: " . $conn->connect_error);
+
+    //prepare errors from database table
+    $error_msg_query = "SELECT error_msg FROM chromaErrors";
+    $error_msg = $conn->query($error_msg_query);
+    $body_stmt = '';
+    if ($error_msg->num_rows > 0) {
+      $i = 0;
+      while( ($row = $error_msg->fetch_assoc()) && ($i < 15) ) {
+        // output data of each row
+        $body_stmt .= $row['error_msg'].'<hr>';
+        $i++;
+      }
+    }
+    if($body_stmt != '') {
+      echo $body_stmt;
+    } else {
+      echo "<span style='color: green; font-weight: 700;'>There are no client side errors. Good Job!</span>";
+    }
+
+  //if date on most recent row is > 1 day before
+  //clear rows
+  $conn->query("DELETE FROM chromaErrors WHERE date_err < DATE_ADD(curdate(),INTERVAL -1 day)");
+  $conn->close();
+  } catch(Exception $e) {
+    echo $e->getMessage();
+  }
+}
+
 //implement reddit trending topic api
 //https://www.reddit.com/r/Apple/top/.json?limit=10

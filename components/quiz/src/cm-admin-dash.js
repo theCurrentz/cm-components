@@ -15,6 +15,7 @@ new Vue({
         { text: 'Answered', value: 'answered' },
         { text: 'Completed', value: 'question' },
         { text: 'Subscribed', value: 'subscribed' },
+        { text: 'Duplicate Sub', value: 'duplicateSubscribe' },
       ],
       quizzes: cmQuiz.quizzes,
       pagination: {

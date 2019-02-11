@@ -20,7 +20,11 @@ function chromma_post_meta_boxes_setup() {
 
 //searches for a match in post meta data to display checked
 function chromma_is_checked($needle, $haystack) {
+  if (!is_array($haystack)) {
+    return false;
+  }
   echo ( in_array($needle, $haystack) ) ? 'checked' : '';
+  return ( in_array($needle, $haystack) ) ? 'true' : 'false';
 }
 
 //Create meta boxes

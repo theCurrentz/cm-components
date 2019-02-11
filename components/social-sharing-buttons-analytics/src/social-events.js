@@ -1,18 +1,35 @@
 'use strict'
-var socialShareMaster = function() {
-  var socialButtons = document.querySelectorAll('.share-button')
+const socialShareMaster = function() {
+  //cache nodes and resources
+  const socialButtons = document.querySelectorAll('.share-button'),
+        postId = (() => {
+          try {
+            let bClass = Array.prototype.join.call(document.body.classList, ' ')
+            return bClass.match(/postid-[0-9]*/g)[0].split('-')[1]
+          } catch(err) {
+            return null
+          }
+        })();
   if ( !(socialButtons.length > 0) )
     return
   var shareTypeMsg = 'no type',
         shareThisUrl = null,
         selfRef = this
+  var linkLocation = encodeURIComponent(window.location.href),
+        linkTitle = encodeURIComponent(document.title)
   if (document.getElementsByClassName('email-share').length > 0)
-    document.getElementsByClassName('email-share')[0].href = 'mailto:?subject='+ escape(document.title) + '&body=' + escape(window.location.href)
-  for(var i = 0, l = socialButtons.length; i < l; i++) {
-    socialButtons[i].addEventListener('click', function(event) {
-      event.preventDefault()
-      selfRef.shareRouter(this.getAttribute('data-share'))
-    })
+    document.getElementsByClassName('email-share')[0].href = 'mailto:?subject='+ linkTitle + '&body=' + linkLocation
+  for(let i = 0, l = socialButtons.length; i < l; i++) {
+      if (socialButtons[i].getAttribute('data-has-listener') == null) {
+        socialButtons[i].addEventListener('click', function(event) {
+          let hasOverride = this.parentNode.getAttribute('data-url-override')
+          linkLocation = (doesExist(hasOverride)) ? encodeURIComponent(hasOverride) : encodeURIComponent(window.location.href)
+          linkTitle = (doesExist(hasOverride)) ? encodeURIComponent(this.parentNode.getAttribute('data-title-override')) : encodeURIComponent(document.title)
+          event.preventDefault()
+          selfRef.shareRouter(this.getAttribute('data-share'))
+        })
+        socialButtons[i].setAttribute('data-has-listener', 'true')
+    }
   }
 
   var closeFlag = true;
@@ -37,11 +54,11 @@ var socialShareMaster = function() {
   }
 
   this['facebook']  = () => {
-    shareThisUrl = 'https://www.facebook.com/sharer.php?u=' + escape(window.location.href) + '&amp;t=' + escape(document.title),
+    shareThisUrl = 'https://www.facebook.com/sharer.php?u=' + linkLocation + '&amp;t=' + linkTitle,
     shareTypeMsg = 'Facebook'
   }
   this['twitter'] = () => {
-    shareThisUrl = `https://twitter.com/intent/tweet?text=${escape(document.title)}&url=${escape(window.location.href)}`
+    shareThisUrl = `https://twitter.com/intent/tweet?text=${linkTitle}&url=${linkLocation}`
     shareTypeMsg =  'Twitter'
   }
   this['email'] = () => {
@@ -52,16 +69,16 @@ var socialShareMaster = function() {
     shareThisUrl = null
   }
   this['reddit'] = () => {
-    shareThisUrl = '//www.reddit.com/submit?url=' + encodeURIComponent(window.location)
+    shareThisUrl = `https://www.reddit.com/submit?url='${linkLocation}`
     shareTypeMsg = 'Reddit'
   }
   this['flipboard'] = () => {
-    shareThisUrl = 'https://share.flipboard.com/bookmarklet/popout?v=2' + '&title=' + escape(document.title) + '&url=' + encodeURIComponent(window.location) + '&utm_campaign=tools&utm_medium=article-share&utm_source=www.idropnews.com&t=' + Date.now()
+    shareThisUrl = 'https://share.flipboard.com/bookmarklet/popout?v=2' + '&title=' + linkTitle + '&url=' + linkLocation + '&utm_campaign=tools&utm_medium=article-share&utm_source=www.idropnews.com&t=' + Date.now()
     shareTypeMsg = 'Flipboard'
   }
   this['copylink'] = () => {
     let urlInput = document.createElement('input')
-    urlInput.setAttribute('value', window.location)
+    urlInput.setAttribute('value', decodeURIComponent(linkLocation))
     urlInput.setAttribute('style', 'opacity: 0; position: absolute; top: 0px; z-index: -100; transform: translateX(-100vw);')
     document.body.appendChild(urlInput)
     urlInput.select()
@@ -73,8 +90,8 @@ var socialShareMaster = function() {
   }
   this['more'] = () => {
     let moreSharing = document.getElementById('more-sharing')
-    if(moreSharing == null)
-      throw " No other sharing options are available."
+    if (doesExist(moreSharing) === false)
+      throw " No other sharing options are available.";
     moreSharing.classList.toggle('is_active')
     if(moreSharing.getAttribute('data-focus') == 'true'){
       moreSharing.setAttribute('data-focus', 'false')
@@ -89,19 +106,19 @@ var socialShareMaster = function() {
     shareTypeMsg = 'More'
   }
   this['linkedin'] = () => {
-    shareThisUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location)}&title=${escape(document.title)}`
+    shareThisUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${linkLocation}&title=${linkTitle}`
     shareTypeMsg = 'Linked In'
   }
   this['pinterest'] = () => {
-    shareThisUrl = `https://www.pinterest.com/pin/create/bookmarklet/?url=${encodeURIComponent(window.location)}&media=${encodeURIComponent(document.querySelector('meta[property="og:image"]').content)}&description=${escape(document.title)}`
+    shareThisUrl = `https://www.pinterest.com/pin/create/bookmarklet/?url=${linkLocation}&media=${encodeURIComponent(document.querySelector('meta[property="og:image"]').content)}&description=${linkTitle}`
     shareTypeMsg = 'Pinterest'
   }
   this['pocket'] = () => {
-    shareThisUrl = `https://getpocket.com/save?url=${encodeURIComponent(window.location)}`
+    shareThisUrl = `https://getpocket.com/save?url=${linkLocation}`
     shareTypeMsg = 'Pocket'
   }
   this['line'] = () => {
-    shareThisUrl = `https://lineit.line.me/share/ui?url=${encodeURIComponent(window.location)}&text=${escape(document.title)}`
+    shareThisUrl = `https://lineit.line.me/share/ui?url=${linkLocation}&text=${linkTitle}`
     shareTypeMsg = 'line'
   }
   this['print'] = () => {
@@ -122,7 +139,7 @@ var socialShareMaster = function() {
       this.feedbackMsg("API Uunavailable.")
       return
     }
-    shareThisUrl = `fb-messenger://share?link=${encodeURIComponent(window.location)}&app_id=${encodeURIComponent(chromaApp.fbAppID)}`
+    shareThisUrl = `fb-messenger://share?link=${linkLocation}&app_id=${encodeURIComponent(chromaApp.fbAppID)}`
     shareTypeMsg = 'FB Messenger'
   }
   this['whatsapp'] = () => {
@@ -131,7 +148,7 @@ var socialShareMaster = function() {
       this.feedbackMsg("WhatsApp is only available on mobile devices.")
       return
     }
-    shareThisUrl = 'whatsapp://send?text=' + escape(document.title) + '%20' + encodeURIComponent(window.location)
+    shareThisUrl = 'whatsapp://send?text=' + linkTitle + '%20' + linkLocation
     shareTypeMsg = 'Whatsapp'
   }
   this['comment'] = () => {
@@ -158,16 +175,17 @@ var socialShareMaster = function() {
         window.open(shareThisUrl, '_blank')
       //execute analytics
       if (window._gaq && window._gaq._getTracker)
-        ga('send', 'socialShare', `${shareTypeMsg} social click`, escape(window.location.href));
+        ga('send', 'socialShare', `${shareTypeMsg} social click`, linkLocation);
       var dataLayer = dataLayer || []
       if (typeof dataLayer != 'undefined') {
         dataLayer.push({
           'event': {
             'eventName': 'socialShare',
             'shareType': `${shareTypeMsg} social click`,
-            'originURL': escape(window.location.href)
+            'originURL': linkLocation
           }
         })
+        socialEvent(`_${shareTypeMsg.replace(' ','_').toLowerCase()}_click`, postId)
       }
     } catch(err) {
         this.feedbackMsg('There was a problem sharing this content.' + err)
@@ -175,27 +193,37 @@ var socialShareMaster = function() {
     }
   }
 
-        // if (shareType == 'Email Share' || shareType == 'Twitter Share' || shareType == 'Flipboard Share' || shareType == 'Reddit Share') {
-        //   let fetch_prepare = location.protocol + '//' + window.location.hostname + '/wp-json/chroma/social-count/'
-        //   fetch(fetch_prepare, {
-        //     method: 'post',
-        //     headers: {
-        //       "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-        //     },
-        //     body:
-        //       `share_type=${shareType}&post_id=${chromaPost['ID']}`
-        //   })
-        //   .then( (response) => {
-        //     try {
-        //      console.log(response.status)
-        //      return response.text().then(function (text) {
-        //       console.log(text)
-        //      });
-        //     } catch(e) {
-        //       console.log(e, response);
-        //     }
-        //   })
-        //   .catch( (error) => {
-        //     console.log(error)
-        //   })
-        // }
+const socialEvent = function(name = '', postID = '') {
+  if (name === null || name === '' || postID === null || postID === '')
+    return
+  var dataBody = {
+      name: name,
+      postID: postID,
+    },
+  formOptions = {
+    method: 'post',
+    headers: { 'Content-type': 'application/json' },
+    body: JSON.stringify(dataBody)
+  },
+  eventUrl = location.protocol + '//' + window.location.hostname + '/wp-json/chroma/cmevents/'
+  fetch(eventUrl, formOptions)
+    .then(response => { return response.text() })
+    .then(text => {
+      console.log(formOptions.body+ " | " + text)
+    })
+    .catch(error => console.log('Event Error: ' + error))
+};
+
+//Log a post view
+(() => {
+  let postId = (() => {
+    try {
+      let bClass = Array.prototype.join.call(document.body.classList, ' ')
+      return bClass.match(/postid-[0-9]*/g)[0].split('-')[1]
+    } catch(err) {
+      return null
+    }
+  })();
+  if (doesExist(postId))
+    socialEvent('post_views', postId)
+})();

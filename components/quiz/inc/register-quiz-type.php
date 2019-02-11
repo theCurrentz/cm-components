@@ -49,7 +49,8 @@ function chroma_quiz_type() {
 		'publicly_queryable'    => true,
 		'capability_type'       => 'post',
 		'show_in_rest'          => true,
-		'rest_base'             => 'cmquiz'
+		'rest_base'             => 'cmquiz',
+    'taxonomies'          => array( 'category' ),
 
 	);
 	register_post_type( 'cm-quiz', $args );

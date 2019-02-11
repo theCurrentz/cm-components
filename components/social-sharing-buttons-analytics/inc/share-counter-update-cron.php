@@ -1,12 +1,11 @@
 <?php
-//require(dirname(dirname(dirname(dirname(dirname(dirname(__DIR__)))))) . '/wp-config.php');
 function chroma_share_count_cron() {
   try {
     //initialize server sql connection variables
-    $servername = 'rds_ssl.idropnews.com';
-    $username = 'root';
-    $password = 'idrop*news';
-    $db_name = 'wordpress_idrop';
+    $servername = DB_HOST;
+    $username = DB_USER;
+    $password = DB_PASSWORD;
+    $db_name = DB_NAME;
 
     $conn = new mysqli($servername, $username, $password, $db_name);
     // Check connection
@@ -16,13 +15,13 @@ function chroma_share_count_cron() {
 
     // get offset
     // get number of posts
-    // set offset to increment by 100 every time script is run
+    // set offset to increment by 50 every time script is run
     // query OFFSET 100 LIMIT 100 posts to update
 
     // get offset
     $target_offset = "SELECT option_value FROM wp_options WHERE option_name = '_chroma_social_offset'";
     $target_offset = $conn->query($target_offset);
-    $offset_result = '';
+    $offset_result = 0;
     if ($target_offset->num_rows > 0) {
       $row = $target_offset->fetch_row();
       $offset_result = intval($row[0]);
@@ -31,15 +30,13 @@ function chroma_share_count_cron() {
     // get number of posts
     $post_quantity_query = "SELECT COUNT(*) FROM wp_posts WHERE post_type = 'post'";
     $post_quantity_query = $conn->query($post_quantity_query);
-    $quantity_result = '';
+    $quantity_result = 0;
     if ($post_quantity_query->num_rows > 0) {
       $row = $post_quantity_query->fetch_row();
-      $quantity_result = $row[0];
-      $quantity_result = intval(preg_replace("/http?s:\/\//", '', $quantity_result));
+      $quantity_result = intval($row[0]);
     }
-
-    // update offset to increment by 100 every time script is run, if offset(-100) equals is less than the quanity, reset to 0
-    $update_offset = intval(($offset_result - 100 <= $quantity_result) ? $quantity_result/100 + $offset_result : 0);
+    // update offset to increment by 50 every time script is run, if offset(-100) equals is less than the quanity, reset to 0
+    $update_offset = intval(($offset_result - 100 <= $quantity_result) ? 50 + $offset_result : 0);
     $update_offset_query = "UPDATE wp_options SET option_value = $update_offset WHERE option_name = '_chroma_social_offset'";
     // Prepare statement
     $stmt = $conn->prepare($update_offset_query);
@@ -75,11 +72,10 @@ function chroma_share_count_cron() {
           // close curl resource to free up system resources
           curl_close($ch);
           if (!array_key_exists('error', $output)) {
-            $share_value = $output['engagement']['share_count'];
-            $update_query = "UPDATE wp_postmeta SET meta_value='$share_value' WHERE meta_key = '_facebook_share' AND ID = '$post_id'";
-            echo $share_value;
+            $output = serialize($output);
+            $update_query = "UPDATE wp_postmeta SET meta_value='$output' WHERE meta_key = 'facebook_share_info' AND ID = '$post_id'";
           } else {
-            var_dump($output['error']);
+            //var_dump($output['error']);
           }
         } catch(Exception $e) {
           echo $e;

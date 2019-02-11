@@ -6,19 +6,52 @@ abstract class MasterShareCount implements Share_Counter {
 	public static function get_share_count( $url ) {
     $post_id = url_to_postid( $url );
     $fbCheck = FacebookShareCount::get_share_count($url);
-    $fbCheck = (!empty($fbCheck['error'])) ? get_post_meta($post_id, '_facebook_share', true) : FacebookShareCount::get_share_count($url)['engagement'];
     $share_data = array(
-      'fb' => $fbCheck['share_count'],
-      'fbr' => $fbCheck['reaction_count'],
-      'fbc' => $fbCheck["comment_count"],
-      'tw' => intval(get_post_meta($post_id, '_twitter_share', true)),
-      'flip' => intval(get_post_meta($post_id, '_flipboard_share', true)),
-      'email' => intval(get_post_meta($post_id, '_email_share', true)),
-      'reddit' => intval(get_post_meta($post_id, '_reddit_share', true))
+      'fb' => (!empty($fbCheck["engagement"])) ? $fbCheck["engagement"]['share_count'] : 0,
+      'fbr' => (!empty($fbCheck["engagement"])) ? $fbCheck["engagement"]['reaction_count'] : 0,
+      'fbc' => (!empty($fbCheck["engagement"])) ?  $fbCheck["engagement"]["comment_count"] : 0,
+      'tw' => intval(get_post_meta($post_id, '_twitter_click', true)),
+      'flip' => intval(get_post_meta($post_id, '_flipboard_click', true)),
+      'email' => intval(get_post_meta($post_id, '_email_click', true)),
+      'copylink' => intval(get_post_meta($post_id, '_copy_link_click', true)),
+      'comment' => intval(get_post_meta($post_id, '_comment_click', true)),
+      'reddit' => intval(get_post_meta($post_id, '_reddit_click', true)),
+      'whatsapp' => intval(get_post_meta($post_id, '_whatsapp_click', true)),
+      'messenger' => intval(get_post_meta($post_id, '_messenger_click', true)),
+      'linkedin' => intval(get_post_meta($post_id, '_linked_in_click', true)),
+      'pinterest' => intval(get_post_meta($post_id, '_pinterest_click', true)),
+      'pocket' => intval(get_post_meta($post_id, '_pocket_click', true)),
+      'line' => intval(get_post_meta($post_id, '_line_click', true)),
+      'print' => intval(get_post_meta($post_id, '_print_click', true)),
+      'views' => intval(get_post_meta($post_id, 'post_views', true)),
+      'more' => intval(get_post_meta($post_id, '_more_click', true)),
     );
-    $share_data['total'] = array_sum($share_data);
-    $share_span = "<span class='chromaShareData' data-facebook='".$share_data['fb']."' data-facebookr='".$share_data['fbr']."' data-facebookc='".$share_data['fbc']."' data-twitter='".$share_data['tw']."' data-flipboard='".$share_data['flip']."' data-email='".$share_data['email']."' data-reddit='".$share_data['reddit']."' data-total='".$share_data['total']."'>".$share_data['total']."</span>";
-    return $share_span;
+    $share_data['total'] = array_sum($share_data) - $share_data['views'] - $share_data['more'];
+    $share_stats =
+    "<div class='chromaShareData'
+      data-facebook='".$share_data['fb']."'
+      data-facebookr='".$share_data['fbr']."'
+      data-facebookc='".$share_data['fbc']."'
+      data-twitter='".$share_data['tw']."'
+      data-flipboard='".$share_data['flip']."'
+      data-email='".$share_data['email']."'
+      data-reddit='".$share_data['reddit']."'
+      data-copylink='".$share_data['copylink']."'
+      data-comment='".$share_data['comment']."'
+      data-messenger='".$share_data['messenger']."'
+      data-whatsapp='".$share_data['whatsapp']."'
+      data-pinterest='".$share_data['pinterest']."'
+      data-linkedin='".$share_data['linkedin']."'
+      data-pocket='".$share_data['pocket']."'
+      data-line='".$share_data['line']."'
+      data-print='".$share_data['print']."'
+      data-more='".$share_data['more']."'
+      data-views='".$share_data['views']."'
+      data-total='".$share_data['total']."'>
+        <span>Views: ".$share_data['views']." </span> |
+        <span>Engagment: ".$share_data['total']."</span>"
+      ."</div>";
+    return $share_stats;
 	}
   public static function update_share_count_endpoint(WP_REST_Request $request) {
     $accepted_origins = array('https://idropnews.com','http://34.227.68.226');

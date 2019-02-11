@@ -169,35 +169,80 @@ gutenberg layout fixes
   }
 }
 .chromaShareData {
-  font-size: .98rem;
-  font-weight: 600;
-  color: #000;
+  font-size: .9rem;
+  color: #666;
+  cursor: pointer;
+  width: 100%;
+  min-height: 30px;
+  margin-bottom: 2px;
 }
 .social-hov-box {
   box-sizing: border-box;
-  position: absolute;
   z-index: 10;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  padding: 5px;
+  top: 50%;
+  left: 50%;
+  margin-top: -25vh;
+  width: 20vw;
+  position: fixed;
+  height: auto;
   color: #000;
-  font-size: .88rem;
-  background: #fff;
-  box-shadow: 0px 0px 16px -6px rgba(0,0,0,.8);
+  display: flex;
+  height: auto;
+  padding: 12px;
+  line-height: 1.8;
+  font-size: .9rem;
+  opacity: 0;
+  background: rgb(255,255,255);
+  box-shadow: none;
   border-radius: 6px;
   font-weight: 600;
-  display: none;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  align-content: center;
-  animation: _fade_in .17s;
-  animation-fill-mode: forwards;
+  transition: opacity .24s;
+  max-height: 0px;
+  transform: translateX(-100vw);
+  border-radius: 4px;
+}
+.social-hov-title {
+  padding: 12px 32px 12px 12px;
+  line-height: 1.5;
+  font-weight: 700;
+  background: #474747;
+  margin: -12px -12px 0px -12px;
+  color: #fff;
+}
+.social-hov-box-close {
+  width: 12px;
+  height: 12px;
+  float: right;
+  padding-right: 6px;
+  font-size: 2rem;
+  position: absolute;
+  top: -12px;
+  right: 6px;
+  color: #fff;
+  cursor: pointer;
 }
 .social-hov-box.is-active {
-  display: flex;
+  opacity: 1;
+  box-shadow: 0px 0px 32px -4px rgba(0,0,0,.72);
+  max-height: 5000%;
+  transform: translateX(0);
+}
+.social-button {
+  border-radius: 4px;
+  padding: 6px 12px;
+  background: #0caf83;
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: .1em;
+  border: none;
+  box-shadow: 0px 1px 6px 0px rgba(0,0,0,.6);
+  cursor: pointer;
+  text-align: center;
+}
+.social-button:hover {
+  background: #31cfa5;
 }
 .edit-post-layout.is-sidebar-opened .components-notice-list {
   margin-left: 45px;

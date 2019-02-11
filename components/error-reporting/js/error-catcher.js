@@ -1,7 +1,9 @@
-'use strict'
-var errorArray = []
+import 'whatwg-fetch';
+
+'use strict';
 // Add a new listener to track event immediately, then send errors after a certain time threshold
-const chromaErrorHandler = () => {
+const chromaErrorHandler = (() => {
+  var errorArray = []
   //listen for error events
   window.addEventListener('error', (ev) => {
     errorArray.push(ev.error + " | " + event.error.stack)
@@ -25,12 +27,10 @@ const chromaErrorHandler = () => {
       xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8")
       xmlHttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-         //console.log(xmlHttp.responseText)
+         console.log(xmlHttp.responseText)
         }
       }
       xmlHttp.send(body);
     }
   }
-}
-//handler starts listening on load
-chromaErrorHandler()
+})();

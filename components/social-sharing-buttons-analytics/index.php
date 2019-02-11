@@ -35,7 +35,6 @@ function chroma_localize_data() {
   echo "<script>var chromaApp = {fbAppID: ".get_option('fb_api_key')."}</script>";
 }
 
-
 function save_post_permalinks($id) {
   $cached_permalink = str_replace('http://34.227.68.226', 'https://idropnews.com', get_the_permalink($id));
   update_post_meta($id, '_chroma_permalink', $cached_permalink);

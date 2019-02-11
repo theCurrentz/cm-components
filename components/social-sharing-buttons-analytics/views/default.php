@@ -2,10 +2,8 @@
 /**
  * Template part for displaying Social Sharing Buttons
  */
- global $post;
 
 class social_share_component {
-
   function setButton($key) {
     $key = strtolower(str_replace('set' ,'',$key));
     ob_start();
@@ -33,7 +31,8 @@ class social_share_component {
     'classList' => null,
     'id' => null,
     'moreBox' => false,
-    'dotsOverrideClass' => null
+    'dotsOverrideClass' => null,
+    'urlOverride' => false
   )) {
       if (!empty($config['dotsOverrideClass'])) {
         echo '<button class="share-button '.$config['dotsOverrideClass'].'" data-share="more" aria-label="click for more sharing options" title="click for more sharing options"></button>';
@@ -42,9 +41,12 @@ class social_share_component {
         $id = (!empty($config['id'])) ? $config['id'] : '';
         unset($config['classList']);
         unset($config['id']);
-      echo '<div class="social-sharing-controller '.$classList.'" id="'.$id.'">';
+        global $post;
+        $urlOverride = ( !empty($config['urlOverride']) && $config['urlOverride'] === true) ?  "data-url-override='".get_the_permalink($post)."'" : '';
+        $titleOverride = ( !empty($config['urlOverride']) && $config['urlOverride'] === true) ?  "data-title-override='".get_the_title($post)."'" : '';
+      echo '<div class="social-sharing-controller '.$classList.'" id="'.$id.'"  '.$urlOverride.' '.$titleOverride.'>';
         foreach($config as $key => $value) {
-           if ($value && !(in_array($key, array('moreBox', 'dotsOverrideClass')))) {
+           if ($value && !(in_array($key, array('moreBox', 'dotsOverrideClass', 'urlOverride')))) {
             $this->setButton($key);
           }
         }

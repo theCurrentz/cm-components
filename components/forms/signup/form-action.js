@@ -18,7 +18,8 @@ function chromaFormHandler (callBack = null) {
       .then(text => {
         let msg = text
         if (formSuccess(msg) && callBack !== null) {
-          callBack()
+          let duplicateEmail = (msg.split(',')[0] === '["Already Subscribed!"') ? true : false
+          callBack(duplicateEmail)
         }
       })
       .catch(error => console.log('Form submission error: ' + error))
@@ -43,7 +44,8 @@ function chromaFormHandler (callBack = null) {
             .then(text => {
               let msg = text
               if (formSuccess(msg) && callBack !== null) {
-                callBack()
+                let duplicateEmail = (msg.split(',')[0] === '["Already Subscribed!"') ? true : false
+                callBack(duplicateEmail)
               }
               if (el.getAttribute('data-next') !== null && el.getAttribute('data-next').indexOf('http') !== -1)
                 window.location = el.getAttribute('data-next')

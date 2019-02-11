@@ -91,10 +91,10 @@ $footerSpace: 64px
     z-index: 100
     @include flexCenter()
     opacity: 0
-    color: #ffffb0
-    font-size: 1.34rem
-    font-weight: 400
-    letter-spacing: .034em4
+    color: #fff
+    font-size: 2rem
+    font-weight: 800
+    letter-spacing: .034em
     text-shadow: 0 0 10px rgba(0,0,0,.4), 0 0 20px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.4), 0 0 40px var(--main-color), 0 0 70px var(--main-color), 0 0 80px var(--main-color), 0 0 100px var(--main-color), 0 0 150px var(--main-color)
     animation-name: cmFadeOut
     animation-duration: 1.92s
@@ -112,6 +112,10 @@ $footerSpace: 64px
     @include fullSize()
     @include slidePos()
     color: #fff
+    display: flex
+    justify-content: space-evenly
+    flex-direction: column
+    padding-top: 12px 0px
     &:after
       content: ''
       width: 100%
@@ -134,7 +138,6 @@ $footerSpace: 64px
         object-fit: contain
     &-ans
       list-style: none
-      position: absolute
       z-index: 25
       color: #fff
       display: flex
@@ -142,8 +145,7 @@ $footerSpace: 64px
       flex-wrap: wrap
       width: 100%
       padding: 20px
-      top: auto
-      bottom: 4px
+      margin-top: auto
       @media (max-width: $mediaFold)
         top: auto
         bottom: 0px
@@ -169,7 +171,6 @@ $footerSpace: 64px
         font-weight: 600
         line-height: 1.35
         text-align: center
-        text-transform: capitalize
         overflow: hidden
         @media (max-width: $mediaFold)
           font-size: 3vw
@@ -194,7 +195,6 @@ $footerSpace: 64px
         &.incorrect
           // border: 2px solid rgba(mediumvioletred, .7)
           // box-shadow: 0px 0px 24px -2px rgba(mediumvioletred, .4)
-          display: none
           opacity: 0
 
         &:nth-of-type(2n+1)
@@ -211,21 +211,16 @@ $footerSpace: 64px
             margin: 5px 3.14%
             padding: 3px
     &-q
-      position: absolute
-      top: 25%
-      left: 0
       width: 100%
       padding: 0px 4%
       @include flexCenter()
       z-index: 10
-      font-size: 2.2rem
+      font-size: 2rem
       font-weight: 500
       line-height: 1.35
+      margin-top: auto
       @media (max-width: $mediaFold)
-        font-size: 1.52rem
-        top: 18%
-      @media (max-width: $mediaFoldLow)
-        top: 2%
+        font-size: 1.48rem
     &-exp
       display: none
       position: relative
@@ -233,7 +228,7 @@ $footerSpace: 64px
       left: 0px
       width: 100%
       height: 100%
-      padding: 2px 16%
+      padding: 4% 16% 12px
       max-width: 99vw
       overflow: hidden
       z-index: 20
@@ -246,7 +241,7 @@ $footerSpace: 64px
       background: rgba(0,0,0,0.92)
       opacity: 0
       @media (max-width: $mediaFold)
-        padding: 2% 4%
+        padding: 4% 4% 12px
       &.is-active
         display: flex
         opacity: 1
@@ -332,8 +327,7 @@ $footerSpace: 64px
         &.correct
           color: mediumspringgreen
         &.incorrect
-          color: #ff5a5a
-          display: none
+          color: #ff3181
   &-share
     position: relative
     top: auto
@@ -344,13 +338,17 @@ $footerSpace: 64px
     background: transparent
     display: flex
     justify-content: space-evenly
+    align-items: center
     padding: 12px
     max-width: 100%
     height: $footerSpace
     margin: 0px
+    display: flex
     .share-button
       height: 100%
-      width: 22%
+      flex-grow: 1
+      flex-basis: 0
+      margin: 0px 4px
       background: rgba(0,0,0,0.2)
       border: 1px solid rgba(255,255,255,0.42)
       border-radius: 4px
@@ -450,31 +448,51 @@ $footerSpace: 64px
       border-left: 4px solid rgba(255,255,255,.55)
       border-radius: 50%
   &_finalscore
-    font-size: 2rem
+    font-size: 1rem
     font-weight: 600
-    text-align: center
-    line-height: 1.5
+    line-height: 1.35
+    width: 35%
   &_share-cta
-    font-size: 1.2rem
-    position: absolute
-    bottom: 20px
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 92%
+    height: 80px
+    max-width: 620px
+    padding: 8px 4%
+    margin: 12px auto
+    border-radius: 4px
+    border: 1px solid rgba(255,255,255,.32)
+    background: rgba(0, 0, 0, 0.2)
+    font-size: 1rem
+    .cm-quiz-share
+      padding: 4px
+    .share-button
+      width: 56px
+      max-width: 56px
+      height: 56px
+      border-radius: 56px
+      &:after
+        content: none
   &_ad
-    width: 100%
+    width: 108%
+    left: -4%
     min-height: 100px
     background: rgba(255, 255, 255, 0.07)
-    margin: 14px auto
+    margin: auto auto 0px
     position: relative
     z-index: 1000
-
+  &_spacer
+    margin-bottom: auto
 .cm-quiz-single
   background: #000
   width: 100%
-  height: 100%
-  width: 100%
-  height: 100vh
+  height: auto
   min-height: 800px
+  min-height: 100vh
   @include flexCenter()
   .cm-quiz
+    margin-top: 45px
     box-shadow: 0px 0px 124px -12px rgba(0,0,0,.68)
   @media (max-width: $mediaFold)
     align-items: flex-start

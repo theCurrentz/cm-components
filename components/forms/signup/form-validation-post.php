@@ -58,13 +58,22 @@ function chroma_form_processer(WP_REST_Request $request) {
         $currURL = chroma_sanitize_input($request->get_param('currURL'));
         $ip = getenv('HTTP_CLIENT_IP')?:getenv('HTTP_X_FORWARDED_FOR')?:getenv('HTTP_X_FORWARDED')?:getenv('HTTP_FORWARDED_FOR')?:getenv('HTTP_FORWARDED')?:getenv('REMOTE_ADDR');
         $prop = get_bloginfo( 'name' );
+        //SELECT to check for existence of row
+        $select = "SELECT email from signups WHERE email = '$email'";
+        $emailExists = (!empty(mysqli_fetch_row($conn->query($select))[0])) ? true : false;
+
         //prepare to insert post result values into database
         $stmt = "INSERT INTO signups (email, subscribe_type, ip_address, web_property, signup_url) VALUES ('$email', '$type', '$ip', '$prop', '$currURL') ON DUPLICATE KEY UPDATE email='$email', subscribe_type='$type'";
+        //doplicate -> reponse (300)
+
         if ($conn->query($stmt) === TRUE) {
           if ( in_array($type, array("unsubscribe") )) {
             $emailErr = "Successfully Unsubscribed!";
           } else if ( in_array($type, array("subscribe", "quiz-subscribe", "fblogin"))) {
-            $emailErr = ["Subscribed!", "Please check your email for confirmation."];
+            if ($emailExists) {
+                $emailErr = ["Already Subscribed!", "Please check your email to verify your subscription."];
+            } else
+              $emailErr = ["Subscribed!", "Please check your email for confirmation."];
           } else {
             $emailErr = ["Invalid Subscription Type", "Please try again later."];
           }

@@ -20,6 +20,7 @@ function quiz_analytics() {
         <td>{{ props.item.answered }}</td>
         <td>{{ props.item.completed }}</td>
         <td>{{ props.item.subscribed }}</td>
+        <td>{{ props.item.duplicateSubscribe }}</td>
       </template>
     </v-data-table>
   </v-app>
@@ -69,6 +70,11 @@ function enqueue_quiz_dash_scripts($hook) {
             'subscribed',
             true
           ),
+          'duplicateSubscribe' => get_post_meta(
+            get_the_ID(),
+            'duplicateSubscribe',
+            true
+          ),
           // 'question' => json_decode(stripslashes(get_post_meta(
           //   get_the_ID(),
           //   'question',
@@ -76,11 +82,6 @@ function enqueue_quiz_dash_scripts($hook) {
           // )))
       ];
         array_push($data, $quizArray);
-        var_dump(json_decode(stripslashes(get_post_meta(
-          get_the_ID(),
-          'question',
-          true
-        ))));
       }
     }
     wp_localize_script('cm-dash', 'cmQuiz', [

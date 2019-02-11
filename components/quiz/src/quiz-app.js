@@ -6,42 +6,9 @@ import {initState, cmQuizStore, render, questionTracker} from './quiz-store.js'
 import fbInitializer from "/var/www/html/wp-content/plugins/cm-components/components/forms/signup/facebook-api-init.js"
 import chromaFormHandler from '/var/www/html/wp-content/plugins/cm-components/components/forms/signup/form-action.js'
 import cmEvent from './cm-analytics.js'
+import {doesExist, getRandomInt} from './utility/functions.js'
+import {setScene} from "./scene/set-scene.js"
 cmQuizStore.subscribe(render)
-
-/**
- * Utility Functions
- */
-function doesExist(el) {
-  if (el !== null && typeof el !== 'undefined')
-    return true
-}
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
-
-/**
- * Set Scene
- */
-(function() {
-  try {
-    let targetNode,
-    darken = ''
-    if (doesExist(document.getElementsByClassName('cm-quiz-single')[0])) {
-      targetNode = document.getElementsByClassName('cm-quiz-single')[0]
-    } else if (doesExist(document.getElementsByClassName('cm-quiz')[0])) {
-     targetNode = document.getElementsByClassName('cm-quiz')[0]
-     darken = 'linear-gradient(90deg, rgba(0,0,0, 0.56),rgba(0,0,0,0.56)),'
-    }
-    let gradientArray = ['#f0f,blue', '#ff512f, #dd2476', '#5433ff, #20bdff, #a5fecb', '#f79d00, #64f38c', '#396afc, #2948ff']
-    let randomSelect = gradientArray[getRandomInt(5)]
-    let choice = `${darken}linear-gradient(335deg,${randomSelect})`
-    let primaryColor = randomSelect.split(',')[1]
-    targetNode.style.background = choice
-   document.getElementById('cm-quiz').style.setProperty("--main-color", primaryColor)
-  } catch (e) {
-      console.log(e.message)
-    }
-})()
 
 //quiz app controller
 const quizAppCont = function(cmQuiz) {
@@ -57,7 +24,7 @@ const quizAppCont = function(cmQuiz) {
     slideAmount = slides.length,
     progression = document.getElementById('cm-quiz-prog'),
     theTime = document.getElementsByClassName('cm-quiz_timer')[0],
-    qWeight = Math.round(100 / slideAmount),
+    qWeight = 100 / slideAmount,
     scale = {a: 0, b:1, c:2, d:3}
   var
     currentIndex = 0,
@@ -69,7 +36,8 @@ const quizAppCont = function(cmQuiz) {
     backFlag = false,
     fwdFlag = false,
     backButton = document.getElementById('cm-quiz-back'),
-    fwdButton = document.getElementById('cm-quiz-fwd')
+    fwdButton = document.getElementById('cm-quiz-fwd'),
+    questionHandlerActive = false
   /**
   * Quiz App Initializr
   */
@@ -83,10 +51,16 @@ const quizAppCont = function(cmQuiz) {
       else
         slide.setAttribute('data-locked', 'false')
     })
-    progression.innerHTML = currentIndex + ' / ' + slideAmount
+    progression.innerHTML = currentIndex + 1 + ' / ' + slideAmount
     watchSlide(currentIndex);
     //fire impressions/view event
     cmEvent('Views', quizID)
+    fbq('track', 'Lead', {
+       content_name: 'Quiz',
+       content_category: 'Viewed',
+       value: 0.0,
+       currency: 'USD'
+     });
   }
 
   /**
@@ -95,7 +69,8 @@ const quizAppCont = function(cmQuiz) {
   const watchSlide = () => {
     if (
           currentIndex < slideAmount
-          && currentNode.getAttribute('data-answered') == 'false' 
+          && currentNode.getAttribute('data-answered') == 'false'
+          && !questionHandlerActive
         )
       questionHandler()
   }
@@ -119,16 +94,13 @@ const quizAppCont = function(cmQuiz) {
           }
       })
     } fwdControl()
-  
+
     /**
      * updateNavNodes - determines navigation node tree of slides, recalculates positioning, triggers sequencing
-     * @param {string} type 
+     * @param {string} type
      */
   function updateNavNodes(type) {
-    //cleanup and resetting
-    headerController.removeTheTime()
-    progression.innerHTML = currentIndex + ' / ' + slideAmount
-    //determine new arrangement of nodes
+    //determine new relative arrangement of nodes
     if (type == 'forward' || type=='timer' && doesExist(nextNode) && nextNode.getAttribute('data-locked') == 'false') {
       currentIndex++
       prevNode = currentNode
@@ -136,19 +108,11 @@ const quizAppCont = function(cmQuiz) {
       nextNode = (doesExist(currentNode.nextElementSibling)) ? currentNode.nextElementSibling : null
       fwdButton.focus()
     } else if (type == 'back' && doesExist(prevNode)) {
-      console.log("what???")
       currentIndex--
       nextNode = currentNode
       currentNode = (doesExist(currentNode.previousElementSibling)) ? currentNode.previousElementSibling : null
       prevNode = (doesExist(currentNode) && doesExist(currentNode.previousElementSibling)) ? currentNode.previousElementSibling : null
     }
-    if(doesExist(currentNode))
-      console.log(`%c Current ${currentNode.getAttribute('data-key')}`, 'color: green')
-    if(doesExist(prevNode))
-      console.log(`%c Prev ${prevNode.getAttribute('data-key')}`, 'color: green')
-    if(doesExist(nextNode))
-      console.log(`%c Next ${nextNode.getAttribute('data-key')}`, 'color: green')
-
 
     //if the next node is not locked, activate forwards
     if (doesExist(nextNode) && nextNode.getAttribute('data-locked') == 'false') {
@@ -166,22 +130,26 @@ const quizAppCont = function(cmQuiz) {
       backFlag = false
       backButton.classList.remove('is-active')
     }
-   
-    //extend to manage reflow of active node visibly and
-    function reflow() {
-      //reset and set position of current slide
-      function resetAndSetPosition(element, newPosition) {
-        if(doesExist(element)) {
-          element.classList.remove('translate-pos-100')
-          element.classList.remove('translate-neg-100')
-          element.classList.remove('is-active')
-          element.classList.add(newPosition)
-        }
+
+    //reset and set position of current slide
+    function resetAndSetPosition(element, newPosition) {
+      if(doesExist(element)) {
+        element.classList.remove('translate-pos-100')
+        element.classList.remove('translate-neg-100')
+        element.classList.remove('is-active')
+        element.classList.add(newPosition)
       }
+    }
+    //extend to manage rerender of active node
+    (function() {
       resetAndSetPosition(prevNode, 'translate-neg-100')
       resetAndSetPosition(currentNode, 'is-active')
       resetAndSetPosition(nextNode, 'translate-pos-100')
-    } reflow()
+      //cleanup and resetting
+      headerController.removeTheTime()
+      if (currentIndex < slideAmount)
+        progression.innerHTML = currentIndex + 1 + ' / ' + slideAmount
+    })()
 
      //handle either ending sequence or activate the slide watcher
      if (currentIndex >= (slideAmount)) {
@@ -210,35 +178,46 @@ const quizAppCont = function(cmQuiz) {
   * Handler for Question & Answer Control
   */
   const questionHandler = () => {
+    questionHandlerActive = true
     const currentSlide = slides[currentIndex],
          answers = currentSlide.querySelectorAll('.cm-quiz-slide-ans li')
     var answerChosen = false;
-    [].forEach.call(answers, (e) => {
+    Array.prototype.forEach.call(answers, (e) => {
       e.addEventListener('click', (ev) => {
         if (answerChosen === false) {
           //fire question info event
+          if (currentIndex === 0) {
+            fbq('track', 'Lead', {
+               content_name: 'Quiz',
+               content_category: 'Started',
+               value: 0.0,
+               currency: 'USD'
+             });
+          }
           cmEvent('question', quizID, [currentSlide.querySelector('.cm-quiz-slide-q').innerHTML, e.innerHTML])
-          feedBack(e, ev)
           answerChosen = true
           currentNode.setAttribute('data-answered', 'true')
           nextNode.setAttribute('data-locked', 'false')
           fwdButton.classList.add('is-active')
           fwdFlag = true
+          feedBack(e, ev)
         }
       })
     })
     const feedBack = (e, ev) => {
       //remove listener as soon as clicked to prevent multiple clicks
-      [].forEach.call(answers, (el) => {el.removeEventListener('click',feedBack)})
+      Array.prototype.forEach.call(answers, (el) => {el.removeEventListener('click',feedBack)})
+      //hide question block
+      answers[0].parentNode.style.display = 'none'
+      answers[0].parentNode.previousElementSibling.style.display = 'none'
       //calc score
       if (Array.prototype.indexOf.call(answers, e) === scale[currentSlide.getAttribute('data-correct')]) {
         totalScore += qWeight
-        let scoreShout = document.createElement('div')
-          scoreShout.className = 'cm-quiz-shout'
-          scoreShout.innerHTML = '+' + qWeight + ' Points!'
-        answers[0].parentNode.style.display = 'none'
-        cmQuiz.appendChild(scoreShout)
-        setTimeout(function() { scoreShout.remove() }, 2400)
+        // let scoreShout = document.createElement('div')
+        //   scoreShout.className = 'cm-quiz-shout'
+        //   scoreShout.innerHTML = '+' + Math.round(qWeight) + ' Points!'
+        // cmQuiz.appendChild(scoreShout)
+        // setTimeout(function() { scoreShout.remove() }, 2400)
       }
       //display correct/incorrect
       let correct = Array.prototype.filter.call(answers, e2 => Array.prototype.indexOf.call(answers, e2) === scale[currentSlide.getAttribute('data-correct')])[0];
@@ -246,7 +225,7 @@ const quizAppCont = function(cmQuiz) {
       correct.classList.add('correct')
 
       correct.setAttribute('data-correct', 'correct');
-      [].forEach.call(incorrect, i => {
+      Array.prototype.forEach.call(incorrect, i => {
         i.classList.add('incorrect')
         i.setAttribute('data-correct', 'incorrect')
       })
@@ -255,6 +234,7 @@ const quizAppCont = function(cmQuiz) {
       cmEvent('answered', quizID)
       //display explanation transition
       explanationHandler(correct.innerHTML)
+      questionHandlerActive = false
     }
   }
 
@@ -351,21 +331,39 @@ const quizAppCont = function(cmQuiz) {
   /**
   * Generate Score Results for user
   */
-  this.generateResults = () => {
+  this.generateResults = (duplicateEmail = false) => {
+    nextNode.setAttribute('data-locked', 'false')
+    updateNavNodes('forward')
     //fire subscribed event
-    cmEvent('subscribed', quizID)
-    cmQuiz.getElementsByClassName('cm-quiz-prompt')[0].style.transform = "translateX(-100%)"
-    let results = cmQuiz.getElementsByClassName('cm-quiz-results')[0],
-      resultsUL = document.createElement('ul'),
-      resultsList = '<li><span>#</span><span>Question</span><span>Answer</span></li>';
-    cmQuizStore.getState().questions.forEach((q) => {
-      resultsList += `<li><span>${q.index}</span><span>${q.title}</span><span class="${q.correct}">${q.answer}</span></li>`
-    })
-    resultsUL.innerHTML = resultsList
-    results.innerHTML = `<span class='cm-quiz_finalscore'>Score: ${totalScore}%</span><span class='cm-quiz_share-cta'>Share your score!</span>`
-    results.appendChild(resultsUL)
-    results.classList.remove('translate-pos-100')
-    results.classList.add('is-active')
+    if (!duplicateEmail) {
+      cmEvent('subscribed', quizID)
+    } else {
+      cmEvent('duplicateSubscribe', quizID)
+    }
+    //fire fb event if quiz has been completed and user has subscribed
+    fbq('track', 'Lead', {
+      content_name: 'Quiz',
+      content_category: 'Completed',
+      value: 0.0,
+      currency: 'USD'}
+    );
+    //fire
+    //fire gleam Quiz Completion Event
+    // const Gleam = Gleam || []
+    // Gleam.push(['quiz', document.querySelector('.cm-quiz-title').innerHTML])
+    //render results
+    let results = cmQuiz.getElementsByClassName('cm-quiz-results')[0]
+    if (!doesExist(document.getElementById('cm-quiz-results-ul'))) {
+        let resultsUL = document.createElement('ul'),
+        resultsList = '<li><span>#</span><span>Question</span><span>Answer</span></li>';
+      cmQuizStore.getState().questions.forEach((q) => {
+        resultsList += `<li><span>${q.index}</span><span>${q.title}</span><span class="${q.correct}">${q.answer}</span></li>`
+      })
+      resultsUL.id = 'cm-quiz-results-ul'
+      resultsUL.innerHTML = resultsList
+      results.appendChild(resultsUL)
+    }
+    results.querySelector('.cm-quiz_finalscore').innerHTML = `Score: ${Math.round(totalScore)}%`
   }
 
   /**
@@ -381,13 +379,16 @@ const quizAppCont = function(cmQuiz) {
       newAdIns.setAttribute('data-ad-slot', '5741416818')
       newAdIns.setAttribute('data-ad-format', 'horizontal')
     newAd.appendChild(newAdIns)
-    currExp.insertBefore(newAd, currExp.children[0]);
+    currExp.appendChild(newAd);
+    //append spacer
+    const spacer = document.createElement('div')
+    spacer.classList = 'cm-quiz_spacer'
+    currExp.insertBefore(spacer, currExp.firstChild);
     //push ad
     (adsbygoogle = window.adsbygoogle || []).onload = function () {
       adsbygoogle.push({})
     }
   }
-
 } // End App
 
 /*
