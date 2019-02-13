@@ -1,0 +1,2 @@
+# Admin Assistant
+Enqueues helper assets for the admin screens, providing some custom tooling for admins. Also cleans up the admin UI a bit. Project uses ES6 Modules. Often integrated with other plugins.

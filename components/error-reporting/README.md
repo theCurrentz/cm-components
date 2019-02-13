@@ -1,0 +1,2 @@
+# Error Reporter
+Script that collects client side errors, saves them to the DB. Also includes a cron job script that will send out emails with the errors. The way I'm handling this at the moment is to display the errors via the WordPress welcome message. See component "Admin Theme". Perhaps a good way to deal with these errors in the future is using a 3rd party service such as "Sentry", but I honestly don't think we have the scale of issues to require that.

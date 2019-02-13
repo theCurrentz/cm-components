@@ -1,2 +1,2 @@
-# Amazon Affiliate Link Builder Extension
-Extend the default behavior of Amazon Affiliate Link Builder, by dequeueing their assets, appending oneLink.js(an amazon geo autolinking service) where necessary.
+# Advanced Custom Fields Extension
+Filter ACF post object query so that it queries in chronological order.
